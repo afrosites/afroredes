@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { User as UserIcon } from 'lucide-react';
+import { User as UserIcon, Edit, Image as ImageIcon } from 'lucide-react';
 import { useSession } from '@/components/SessionContextProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import AvatarGallery from '@/components/AvatarGallery'; // Importar AvatarGallery
+import { Badge } from '@/components/ui/badge'; // Importar Badge
 
 interface ProfileData {
   first_name: string | null;
@@ -25,7 +28,7 @@ interface ProfileData {
   guilds: { name: string } | null;
   status: string | null;
   gender: string | null;
-  guild_role: string | null; // Adicionado campo de cargo na guilda
+  guild_role: string | null;
 }
 
 const Profile: React.FC = () => {
@@ -41,7 +44,9 @@ const Profile: React.FC = () => {
   const [levelInput, setLevelInput] = useState<number | ''>('');
   const [statusInput, setStatusInput] = useState('Online');
   const [genderInput, setGenderInput] = useState('');
-  const [guildRoleInput, setGuildRoleInput] = useState(''); // Estado para o cargo na guilda
+  const [guildRoleInput, setGuildRoleInput] = useState('');
+  const [isAvatarGalleryOpen, setIsAvatarGalleryOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -57,7 +62,7 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status, gender, guild_role') // Incluir gênero e guild_role
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status, gender, guild_role')
       .eq('id', user.id)
       .single();
 
@@ -74,7 +79,7 @@ const Profile: React.FC = () => {
       setLevelInput(data.level || 1);
       setStatusInput(data.status || 'Online');
       setGenderInput(data.gender || '');
-      setGuildRoleInput(data.guild_role || 'Membro'); // Definir cargo inicial
+      setGuildRoleInput(data.guild_role || 'Membro');
     }
     setLoadingProfile(false);
   };
@@ -82,7 +87,7 @@ const Profile: React.FC = () => {
   const handleUpdateProfile = async () => {
     if (!user) return;
 
-    setLoadingProfile(true);
+    setIsSubmitting(true);
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -94,7 +99,7 @@ const Profile: React.FC = () => {
         level: typeof levelInput === 'number' ? levelInput : 1,
         status: statusInput,
         gender: genderInput,
-        guild_role: guildRoleInput, // Salvar cargo na guilda
+        guild_role: guildRoleInput,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -107,7 +112,21 @@ const Profile: React.FC = () => {
       await fetchProfile();
       setIsEditing(false);
     }
-    setLoadingProfile(false);
+    setIsSubmitting(false);
+  };
+
+  const handleCancelEdit = () => {
+    // Reset inputs to current profile data
+    setFirstNameInput(profile?.first_name || '');
+    setLastNameInput(profile?.last_name || '');
+    setAvatarUrlInput(profile?.avatar_url || '');
+    setBioInput(profile?.bio || '');
+    setClassInput(profile?.class || '');
+    setLevelInput(profile?.level || 1);
+    setStatusInput(profile?.status || 'Online');
+    setGenderInput(profile?.gender || '');
+    setGuildRoleInput(profile?.guild_role || 'Membro');
+    setIsEditing(false);
   };
 
   if (isSessionLoading || loadingProfile) {
@@ -134,169 +153,210 @@ const Profile: React.FC = () => {
     <div className="flex flex-col items-center justify-center p-4">
       <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Meu Perfil</h2>
       <Card className="w-full max-w-2xl">
-        <CardHeader className="flex flex-col items-center text-center">
-          <Avatar className="h-24 w-24 mb-4">
+        <CardHeader className="flex flex-col items-center text-center p-6">
+          <Avatar className="h-28 w-28 mb-4 border-4 border-primary shadow-lg">
             <AvatarImage src={displayAvatar} alt={displayName} />
-            <AvatarFallback>
-              <UserIcon className="h-12 w-12 text-muted-foreground" />
+            <AvatarFallback className="text-5xl font-bold">
+              <UserIcon className="h-16 w-16 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
-          <CardTitle className="text-2xl">{displayName}</CardTitle>
-          <p className="text-muted-foreground">{displayEmail}</p>
+          <CardTitle className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+            {displayName}
+          </CardTitle>
+          <p className="text-md text-muted-foreground">{displayEmail}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {isEditing ? (
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="firstName">Primeiro Nome</Label>
-                <Input
-                  id="firstName"
-                  value={firstNameInput}
-                  onChange={(e) => setFirstNameInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">Sobrenome</Label>
-                <Input
-                  id="lastName"
-                  value={lastNameInput}
-                  onChange={(e) => setLastNameInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="avatarUrl">URL do Avatar</Label>
-                <Input
-                  id="avatarUrl"
-                  value={avatarUrlInput}
-                  onChange={(e) => setAvatarUrlInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="bio">Biografia</Label>
-                <Textarea
-                  id="bio"
-                  value={bioInput}
-                  onChange={(e) => setBioInput(e.target.value)}
-                  placeholder="Conte-nos um pouco sobre você..."
-                />
-              </div>
-              <div>
-                <Label htmlFor="class">Classe</Label>
-                <Input
-                  id="class"
-                  value={classInput}
-                  onChange={(e) => setClassInput(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="level">Nível</Label>
-                <Input
-                  id="level"
-                  type="number"
-                  value={levelInput}
-                  onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
-                  min="1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select value={statusInput} onValueChange={setStatusInput}>
-                  <SelectTrigger id="status" className="w-full">
-                    <SelectValue placeholder="Selecionar Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Online">Online</SelectItem>
-                    <SelectItem value="Ausente">Ausente</SelectItem>
-                    <SelectItem value="Ocupado">Ocupado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="gender">Gênero</Label>
-                <Select value={genderInput} onValueChange={setGenderInput}>
-                  <SelectTrigger id="gender" className="w-full">
-                    <SelectValue placeholder="Selecionar Gênero" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Masculino">Masculino</SelectItem>
-                    <SelectItem value="Feminino">Feminino</SelectItem>
-                    <SelectItem value="Não Binário">Não Binário</SelectItem>
-                    <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {/* Campo de seleção de Cargo na Guilda (apenas para visualização, não editável aqui) */}
-              <div>
-                <Label htmlFor="guildRole">Cargo na Guilda</Label>
-                <Input
-                  id="guildRole"
-                  value={guildRoleInput || 'Nenhum'}
-                  disabled // Não editável diretamente aqui
-                />
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
-                      Cancelar
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Descartar alterações no perfil</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button onClick={handleUpdateProfile} disabled={loadingProfile}>
-                      {loadingProfile ? 'Salvando...' : 'Salvar'}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Salvar as alterações no perfil</TooltipContent>
-                </Tooltip>
-              </div>
+        <CardContent className="space-y-6 p-6 pt-0">
+          <p className="text-center text-gray-700 dark:text-gray-300 text-lg">
+            {profile?.bio || "Nenhuma biografia definida. Edite seu perfil para adicionar uma!"}
+          </p>
+          <Separator />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center md:text-left">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Nível:</p>
+              <p className="text-xl font-semibold">{profile?.level || 1}</p>
             </div>
-          ) : (
-            <>
-              <p className="text-center text-gray-700 dark:text-gray-300">
-                {profile?.bio || "Nenhuma biografia definida. Edite seu perfil para adicionar uma!"}
-              </p>
-              <Separator />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Nível:</p>
-                  <p className="text-lg font-semibold">{profile?.level || 1}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Classe:</p>
-                  <p className="text-lg font-semibold">{profile?.class || 'Aventureiro'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Status:</p>
-                  <p className="text-lg font-semibold">{profile?.status || 'Online'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Gênero:</p>
-                  <p className="text-lg font-semibold">{profile?.gender || 'Não especificado'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
-                  <p className="text-lg font-semibold">{profile?.guilds?.name || 'Nenhuma'}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Cargo na Guilda:</p>
-                  <p className="text-lg font-semibold">{profile?.guild_role || 'Nenhum'}</p>
-                </div>
-              </div>
-              <div className="flex justify-end pt-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button onClick={() => setIsEditing(true)}>Editar Perfil</Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Modificar as informações do seu perfil</TooltipContent>
-                </Tooltip>
-              </div>
-            </>
-          )}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Classe:</p>
+              <p className="text-xl font-semibold">{profile?.class || 'Aventureiro'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Status:</p>
+              <Badge variant="outline" className="text-lg font-semibold mt-1">
+                {profile?.status || 'Online'}
+              </Badge>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Gênero:</p>
+              <p className="text-xl font-semibold">{profile?.gender || 'Não especificado'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
+              <p className="text-xl font-semibold">{profile?.guilds?.name || 'Nenhuma'}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Cargo na Guilda:</p>
+              <Badge variant="outline" className="text-lg font-semibold mt-1">
+                {profile?.guild_role || 'Nenhum'}
+              </Badge>
+            </div>
+          </div>
+          <div className="flex justify-end pt-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setIsEditing(true)}>
+                  <Edit className="mr-2 h-4 w-4" /> Editar Perfil
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Modificar as informações do seu perfil</TooltipContent>
+            </Tooltip>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Dialog for editing profile */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Perfil</DialogTitle>
+            <DialogDescription>
+              Atualize suas informações de personagem.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="firstName" className="text-right">
+                Primeiro Nome
+              </Label>
+              <Input
+                id="firstName"
+                value={firstNameInput}
+                onChange={(e) => setFirstNameInput(e.target.value)}
+                className="col-span-3"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lastName" className="text-right">
+                Sobrenome
+              </Label>
+              <Input
+                id="lastName"
+                value={lastNameInput}
+                onChange={(e) => setLastNameInput(e.target.value)}
+                className="col-span-3"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Avatar</Label>
+              <div className="col-span-3 flex items-center gap-2">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={avatarUrlInput || 'https://github.com/shadcn.png'} alt="Profile Avatar" />
+                  <AvatarFallback>
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  </AvatarFallback>
+                </Avatar>
+                <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmitting}>
+                  Selecionar Avatar
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="bio">Biografia</Label>
+              <Textarea
+                id="bio"
+                value={bioInput}
+                onChange={(e) => setBioInput(e.target.value)}
+                placeholder="Conte-nos um pouco sobre você..."
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <Label htmlFor="class">Classe</Label>
+              <Input
+                id="class"
+                value={classInput}
+                onChange={(e) => setClassInput(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <Label htmlFor="level">Nível</Label>
+              <Input
+                id="level"
+                type="number"
+                value={levelInput}
+                onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
+                min="1"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={statusInput} onValueChange={setStatusInput} disabled={isSubmitting}>
+                <SelectTrigger id="status" className="w-full">
+                  <SelectValue placeholder="Selecionar Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Online">Online</SelectItem>
+                  <SelectItem value="Ausente">Ausente</SelectItem>
+                  <SelectItem value="Ocupado">Ocupado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="gender">Gênero</Label>
+              <Select value={genderInput} onValueChange={setGenderInput} disabled={isSubmitting}>
+                <SelectTrigger id="gender" className="w-full">
+                  <SelectValue placeholder="Selecionar Gênero" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Masculino">Masculino</SelectItem>
+                  <SelectItem value="Feminino">Feminino</SelectItem>
+                  <SelectItem value="Não Binário">Não Binário</SelectItem>
+                  <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="guildRole">Cargo na Guilda</Label>
+              <Input
+                id="guildRole"
+                value={guildRoleInput || 'Nenhum'}
+                disabled // Não editável diretamente aqui
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Descartar alterações no perfil</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleUpdateProfile} disabled={isSubmitting}>
+                  {isSubmitting ? 'Salvando...' : 'Salvar'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Salvar as alterações no perfil</TooltipContent>
+            </Tooltip>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AvatarGallery
+        isOpen={isAvatarGalleryOpen}
+        onClose={() => setIsAvatarGalleryOpen(false)}
+        onSelectAvatar={(url) => {
+          setAvatarUrlInput(url);
+          setIsAvatarGalleryOpen(false);
+        }}
+        selectedAvatarUrl={avatarUrlInput}
+      />
     </div>
   );
 };
