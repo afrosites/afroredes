@@ -12,9 +12,11 @@ import Quests from "./pages/Quests";
 import Guilds from "./pages/Guilds";
 import Ranking from "./pages/Ranking";
 import Profile from "./pages/Profile";
-import Settings from "./pages/Settings"; // Import new Settings page
+import Settings from "./pages/Settings";
+import Login from "./pages/Login"; // Import the new Login page
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
+import { SessionContextProvider } from "./components/SessionContextProvider"; // Import SessionContextProvider
 
 const queryClient = new QueryClient();
 
@@ -25,19 +27,22 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
-            <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
-            <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
-            <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
-            <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />
-            <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
-            <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
-            <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} /> {/* New route for Settings */}
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <SessionContextProvider> {/* Wrap with SessionContextProvider */}
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} /> {/* Add Login route */}
+              <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
+              <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
+              <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
+              <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
+              <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />
+              <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
+              <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
+              <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </SessionContextProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

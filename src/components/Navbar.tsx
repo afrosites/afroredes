@@ -1,18 +1,32 @@
 "use client"
 
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom" // Import useNavigate
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Moon, Sun, User } from "lucide-react" // Import User icon
+import { Menu, Moon, Sun, User } from "lucide-react"
 import { useTheme } from "next-themes"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu" // Import DropdownMenuSeparator
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Sidebar } from "./Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { supabase } from "@/integrations/supabase/client" // Import supabase client
+import { toast } from "sonner" // Import toast for notifications
 
 export const Navbar: React.FC = () => {
   const { setTheme } = useTheme()
   const isMobile = useIsMobile()
+  const navigate = useNavigate() // Initialize useNavigate
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Erro ao sair: " + error.message);
+      console.error("Logout error:", error);
+    } else {
+      toast.success("Você saiu com sucesso!");
+      navigate('/login'); // Redirect to login page after logout
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
@@ -48,7 +62,7 @@ export const Navbar: React.FC = () => {
                 <Link to="/game/profile">Perfil</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => console.log("Logout clicked")}>
+              <DropdownMenuItem onClick={handleLogout}> {/* Call handleLogout */}
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
