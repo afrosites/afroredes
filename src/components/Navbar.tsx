@@ -85,7 +85,7 @@ export const Navbar: React.FC = () => {
             <TooltipContent>Ver Notificações</TooltipContent>
           </Tooltip>
 
-          {/* Dropdown de Perfil */}
+          {/* Dropdown de Perfil (agora primeiro) */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -109,7 +109,7 @@ export const Navbar: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Dropdown de Alternância de Tema */}
+          {/* Dropdown de Alternância de Tema (agora segundo) */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
