@@ -3,7 +3,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard } from "lucide-react" // Importar LayoutDashboard
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map } from "lucide-react" // Importar Map
 import { SettingsMenu } from "./SettingsMenu"
 
 interface NavLinkProps {
@@ -40,8 +40,9 @@ export const Sidebar: React.FC = () => {
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" /> {/* Novo link para o Dashboard */}
+          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" />
           <NavLink to="/game" icon={User} label="Status" />
+          <NavLink to="/game/map" icon={Map} label="Mapa do Mundo" /> {/* Novo link para o Mapa */}
           <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" />
           <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" />
           <NavLink to="/game/quests" icon={ScrollText} label="Missões" />

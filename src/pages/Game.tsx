@@ -1,7 +1,7 @@
 import React from 'react';
 import CharacterSheet from '@/components/CharacterSheet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import GameMap from '@/components/GameMap'; // Importar GameMap
+// Removido import GameMap from '@/components/GameMap'; // Remover importação do GameMap
 
 const Game: React.FC = () => {
   // Exemplo de dados do personagem
@@ -18,7 +18,7 @@ const Game: React.FC = () => {
     <div className="flex flex-col items-center justify-center space-y-8"> {/* Ajustado para o layout */}
       <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Bem-vindo ao RPG!</h1>
       
-      <GameMap /> {/* Adicionar o mapa aqui */}
+      {/* GameMap foi movido para uma página separada e acessível pelo sidebar */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl">
         <CharacterSheet {...playerCharacter} />

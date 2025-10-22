@@ -14,7 +14,8 @@ import Ranking from "./pages/Ranking";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard"; // Importar o novo Dashboard
+import Dashboard from "./pages/Dashboard";
+import Map from "./pages/Map"; // Importar a nova página Map
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -33,7 +34,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
-              <Route path="/game/dashboard" element={<GameLayout><Dashboard /></GameLayout>} /> {/* Nova rota para o Dashboard */}
+              <Route path="/game/dashboard" element={<GameLayout><Dashboard /></GameLayout>} />
+              <Route path="/game/map" element={<GameLayout><Map /></GameLayout>} /> {/* Nova rota para o Mapa */}
               <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
               <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
               <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
