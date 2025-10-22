@@ -13,6 +13,7 @@ import { useSession } from '@/components/SessionContextProvider';
 import { PlusCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 interface Guild {
   id: string;
@@ -119,9 +120,14 @@ const Guilds: React.FC = () => {
             <CardDescription>Encontre ou crie sua guilda para se juntar a outros aventureiros.</CardDescription>
           </div>
           {user && (
-            <Button onClick={() => setIsCreatingGuild(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Criar Nova Guilda
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setIsCreatingGuild(true)}>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Criar Nova Guilda
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Crie sua própria guilda e convide amigos</TooltipContent>
+            </Tooltip>
           )}
         </CardHeader>
         <CardContent>
@@ -143,9 +149,14 @@ const Guilds: React.FC = () => {
                       <p className="text-sm text-muted-foreground">{guild.description || 'Nenhuma descrição.'}</p>
                       <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0}</p>
                     </div>
-                    <Button variant="outline" disabled={!user}>
-                      Ver Detalhes
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" disabled={!user}>
+                          Ver Detalhes
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Veja os detalhes desta guilda</TooltipContent>
+                    </Tooltip>
                   </Card>
                 ))}
               </div>
@@ -190,12 +201,22 @@ const Guilds: React.FC = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreatingGuild(false)} disabled={isSubmitting}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreateGuild} disabled={isSubmitting}>
-              {isSubmitting ? 'Criando...' : 'Criar Guilda'}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => setIsCreatingGuild(false)} disabled={isSubmitting}>
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Descartar criação da guilda</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleCreateGuild} disabled={isSubmitting}>
+                  {isSubmitting ? 'Criando...' : 'Criar Guilda'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Confirmar criação da guilda</TooltipContent>
+            </Tooltip>
           </DialogFooter>
         </DialogContent>
       </Dialog>

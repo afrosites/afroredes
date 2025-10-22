@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 interface Quest {
   id: string;
@@ -136,9 +137,14 @@ const Quests: React.FC = () => {
             <CardDescription>Embarque em novas aventuras e ganhe recompensas!</CardDescription>
           </div>
           {user && (
-            <Button onClick={() => setIsCreatingQuest(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Criar Nova Missão
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setIsCreatingQuest(true)}>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Criar Nova Missão
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Crie uma nova missão para outros aventureiros</TooltipContent>
+            </Tooltip>
           )}
         </CardHeader>
         <CardContent>
@@ -173,19 +179,34 @@ const Quests: React.FC = () => {
                       </div>
                       <div className="mt-4 md:mt-0 flex gap-2">
                         {!isAccepted && !isCompleted && (
-                          <Button variant="outline" onClick={() => { setSelectedQuest(quest); setIsAcceptingQuest(true); }} disabled={!user}>
-                            Aceitar Missão
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="outline" onClick={() => { setSelectedQuest(quest); setIsAcceptingQuest(true); }} disabled={!user}>
+                                Aceitar Missão
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Aceite esta missão para iniciar sua jornada</TooltipContent>
+                          </Tooltip>
                         )}
                         {isAccepted && !isCompleted && (
-                          <Button onClick={() => handleCompleteQuest(quest)} disabled={!user}>
-                            Completar Missão
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button onClick={() => handleCompleteQuest(quest)} disabled={!user}>
+                                Completar Missão
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Marque esta missão como completa e receba suas recompensas</TooltipContent>
+                          </Tooltip>
                         )}
                         {isCompleted && (
-                          <Button variant="secondary" disabled>
-                            <CheckCircle2 className="mr-2 h-4 w-4" /> Concluída
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="secondary" disabled>
+                                <CheckCircle2 className="mr-2 h-4 w-4" /> Concluída
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Esta missão já foi concluída</TooltipContent>
+                          </Tooltip>
                         )}
                       </div>
                     </Card>
@@ -212,8 +233,18 @@ const Quests: React.FC = () => {
             <p>Nível Requerido: {selectedQuest?.required_level}</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAcceptingQuest(false)}>Cancelar</Button>
-            <Button onClick={() => selectedQuest && handleAcceptQuest(selectedQuest)}>Aceitar</Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => setIsAcceptingQuest(false)}>Cancelar</Button>
+              </TooltipTrigger>
+              <TooltipContent>Não aceitar esta missão</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => selectedQuest && handleAcceptQuest(selectedQuest)}>Aceitar</Button>
+              </TooltipTrigger>
+              <TooltipContent>Aceitar esta missão</TooltipContent>
+            </Tooltip>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -297,12 +328,22 @@ const Quests: React.FC = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreatingQuest(false)} disabled={isSubmitting}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreateQuest} disabled={isSubmitting}>
-              {isSubmitting ? 'Criando...' : 'Criar Missão'}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => setIsCreatingQuest(false)} disabled={isSubmitting}>
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Descartar criação da missão</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleCreateQuest} disabled={isSubmitting}>
+                  {isSubmitting ? 'Criando...' : 'Criar Missão'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Confirmar criação da missão</TooltipContent>
+            </Tooltip>
           </DialogFooter>
         </DialogContent>
       </Dialog>

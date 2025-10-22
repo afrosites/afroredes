@@ -3,20 +3,22 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Settings } from "lucide-react"; // Removido ChevronDown
+import { Settings } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 interface NavLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
   indent?: boolean;
+  tooltipContent?: string; // Adicionado para compatibilidade com Sidebar NavLink
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false, tooltipContent }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
-  return (
+  const linkContent = (
     <Link
       to={to}
       className={cn(
@@ -29,11 +31,20 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false
       {label}
     </Link>
   );
+
+  if (tooltipContent) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+        <TooltipContent>{tooltipContent}</TooltipContent>
+      </Tooltip>
+    );
+  }
+  return linkContent;
 };
 
 export const SettingsMenu: React.FC = () => {
-  // O componente SettingsMenu agora se comporta como um NavLink direto para a página de configurações.
   return (
-    <NavLink to="/game/settings" icon={Settings} label="Configurações" />
+    <NavLink to="/game/settings" icon={Settings} label="Configurações" tooltipContent="Ajuste as configurações do jogo" />
   );
 };

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 const SettingsForm: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -60,25 +61,35 @@ const SettingsForm: React.FC = () => {
         {/* Sound Effects Toggle */}
         <div className="flex items-center justify-between">
           <Label htmlFor="sound-effects">Efeitos Sonoros</Label>
-          <Switch
-            id="sound-effects"
-            checked={soundEffects}
-            onCheckedChange={setSoundEffects}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Switch
+                id="sound-effects"
+                checked={soundEffects}
+                onCheckedChange={setSoundEffects}
+              />
+            </TooltipTrigger>
+            <TooltipContent>Ativar ou desativar efeitos sonoros</TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Music Volume Slider */}
         <div className="space-y-2">
           <Label htmlFor="music-volume">Volume da Música ({musicVolume[0]}%)</Label>
-          <Slider
-            id="music-volume"
-            min={0}
-            max={100}
-            step={1}
-            value={musicVolume}
-            onValueChange={setMusicVolume}
-            className="w-full"
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Slider
+                id="music-volume"
+                min={0}
+                max={100}
+                step={1}
+                value={musicVolume}
+                onValueChange={setMusicVolume}
+                className="w-full"
+              />
+            </TooltipTrigger>
+            <TooltipContent>Ajustar o volume da música do jogo</TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Language Select */}
@@ -97,10 +108,20 @@ const SettingsForm: React.FC = () => {
         </div>
 
         <div className="flex justify-end space-x-2 pt-4">
-          <Button variant="outline" onClick={handleResetSettings}>
-            Resetar
-          </Button>
-          <Button onClick={handleSaveChanges}>Salvar Alterações</Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" onClick={handleResetSettings}>
+                Resetar
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Redefinir todas as configurações para o padrão</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={handleSaveChanges}>Salvar Alterações</Button>
+            </TooltipTrigger>
+            <TooltipContent>Salvar suas configurações</TooltipContent>
+          </Tooltip>
         </div>
       </CardContent>
     </Card>

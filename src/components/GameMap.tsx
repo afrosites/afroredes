@@ -4,6 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 interface Location {
   id: string;
@@ -43,17 +44,21 @@ const GameMap: React.FC = () => {
         </div>
 
         {locations.map((loc) => (
-          <Button
-            key={loc.id}
-            variant={currentLocation === loc.id ? "default" : "secondary"}
-            size="sm"
-            className="absolute flex items-center gap-1"
-            style={{ left: `${loc.x}%`, top: `${loc.y}%`, transform: 'translate(-50%, -50%)' }}
-            onClick={() => handleLocationClick(loc.id)}
-          >
-            <MapPin className="h-4 w-4" />
-            {loc.name}
-          </Button>
+          <Tooltip key={loc.id}>
+            <TooltipTrigger asChild>
+              <Button
+                variant={currentLocation === loc.id ? "default" : "secondary"}
+                size="sm"
+                className="absolute flex items-center gap-1"
+                style={{ left: `${loc.x}%`, top: `${loc.y}%`, transform: 'translate(-50%, -50%)' }}
+                onClick={() => handleLocationClick(loc.id)}
+              >
+                <MapPin className="h-4 w-4" />
+                {loc.name}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{loc.description}</TooltipContent>
+          </Tooltip>
         ))}
       </CardContent>
     </Card>

@@ -3,20 +3,22 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map } from "lucide-react" // Importar Map
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map } from "lucide-react"
 import { SettingsMenu } from "./SettingsMenu"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip" // Importar componentes de Tooltip
 
 interface NavLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
+  tooltipContent?: string; // Nova prop para o conteúdo do tooltip
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
-  return (
+  const linkContent = (
     <Link
       to={to}
       className={cn(
@@ -28,6 +30,16 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label }) => {
       {label}
     </Link>
   );
+
+  if (tooltipContent) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+        <TooltipContent>{tooltipContent}</TooltipContent>
+      </Tooltip>
+    );
+  }
+  return linkContent;
 };
 
 export const Sidebar: React.FC = () => {
@@ -40,14 +52,14 @@ export const Sidebar: React.FC = () => {
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" />
-          <NavLink to="/game" icon={User} label="Status" />
-          <NavLink to="/game/map" icon={Map} label="Mapa do Mundo" /> {/* Novo link para o Mapa */}
-          <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" />
-          <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" />
-          <NavLink to="/game/quests" icon={ScrollText} label="Missões" />
-          <NavLink to="/game/guilds" icon={Shield} label="Guildas" />
-          <NavLink to="/game/ranking" icon={Award} label="Ranking" />
+          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" tooltipContent="Visão geral do seu progresso" />
+          <NavLink to="/game" icon={User} label="Status" tooltipContent="Veja as estatísticas do seu personagem" />
+          <NavLink to="/game/map" icon={Map} label="Mapa do Mundo" tooltipContent="Explore o mapa do mundo" />
+          <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" tooltipContent="Gerencie seus itens" />
+          <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" tooltipContent="Gerencie suas habilidades e magias" />
+          <NavLink to="/game/quests" icon={ScrollText} label="Missões" tooltipContent="Aceite e complete missões" />
+          <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" />
+          <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" />
         </nav>
       </div>
       <div className="mt-auto border-t py-2">

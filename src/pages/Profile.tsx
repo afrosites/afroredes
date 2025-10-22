@@ -12,15 +12,16 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 interface ProfileData {
   first_name: string | null;
   last_name: string | null;
   avatar_url: string | null;
   bio: string | null;
-  class: string | null; // Add class field
-  level: number | null; // Add level field
-  guilds: { name: string } | null; // Add guild relation
+  class: string | null;
+  level: number | null;
+  guilds: { name: string } | null;
 }
 
 const Profile: React.FC = () => {
@@ -32,8 +33,8 @@ const Profile: React.FC = () => {
   const [lastNameInput, setLastNameInput] = useState('');
   const [avatarUrlInput, setAvatarUrlInput] = useState('');
   const [bioInput, setBioInput] = useState('');
-  const [classInput, setClassInput] = useState(''); // State for class input
-  const [levelInput, setLevelInput] = useState<number | ''>(''); // State for level input
+  const [classInput, setClassInput] = useState('');
+  const [levelInput, setLevelInput] = useState<number | ''>('');
 
   useEffect(() => {
     if (user) {
@@ -49,7 +50,7 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name)') // Select class, level, and guild name
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name)')
       .eq('id', user.id)
       .single();
 
@@ -62,8 +63,8 @@ const Profile: React.FC = () => {
       setLastNameInput(data.last_name || '');
       setAvatarUrlInput(data.avatar_url || '');
       setBioInput(data.bio || '');
-      setClassInput(data.class || ''); // Set class input
-      setLevelInput(data.level || 1); // Set level input
+      setClassInput(data.class || '');
+      setLevelInput(data.level || 1);
     }
     setLoadingProfile(false);
   };
@@ -79,8 +80,8 @@ const Profile: React.FC = () => {
         last_name: lastNameInput,
         avatar_url: avatarUrlInput,
         bio: bioInput,
-        class: classInput, // Update class
-        level: typeof levelInput === 'number' ? levelInput : 1, // Update level
+        class: classInput,
+        level: typeof levelInput === 'number' ? levelInput : 1,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -185,12 +186,22 @@ const Profile: React.FC = () => {
                 />
               </div>
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleUpdateProfile} disabled={loadingProfile}>
-                  {loadingProfile ? 'Salvando...' : 'Salvar'}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" onClick={() => setIsEditing(false)}>
+                      Cancelar
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Descartar alterações no perfil</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button onClick={handleUpdateProfile} disabled={loadingProfile}>
+                      {loadingProfile ? 'Salvando...' : 'Salvar'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Salvar as alterações no perfil</TooltipContent>
+                </Tooltip>
               </div>
             </div>
           ) : (
@@ -214,7 +225,12 @@ const Profile: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-end pt-4">
-                <Button onClick={() => setIsEditing(true)}>Editar Perfil</Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button onClick={() => setIsEditing(true)}>Editar Perfil</Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Modificar as informações do seu perfil</TooltipContent>
+                </Tooltip>
               </div>
             </>
           )}

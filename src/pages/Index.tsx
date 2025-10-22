@@ -1,6 +1,7 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
 
 const Index = () => {
   return (
@@ -10,11 +11,16 @@ const Index = () => {
         <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
           Comece a construir seu incrível projeto aqui!
         </p>
-        <Link to="/game">
-          <Button size="lg" className="text-lg px-8 py-4">
-            Iniciar Jogo RPG
-          </Button>
-        </Link>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link to="/game">
+              <Button size="lg" className="text-lg px-8 py-4">
+                Iniciar Jogo RPG
+              </Button>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>Comece sua aventura no mundo RPG!</TooltipContent>
+        </Tooltip>
       </div>
       <MadeWithDyad />
     </div>

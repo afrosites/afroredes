@@ -11,6 +11,7 @@ import { Sidebar } from "./Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip" // Importar componentes de Tooltip
 
 export const Navbar: React.FC = () => {
   const { setTheme } = useTheme()
@@ -35,9 +36,14 @@ export const Navbar: React.FC = () => {
           {isMobile && (
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="mr-2">
-                  <Menu className="h-6 w-6" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="mr-2">
+                      <Menu className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Abrir menu lateral</TooltipContent>
+                </Tooltip>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-64">
                 <Sidebar />
@@ -51,12 +57,17 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center space-x-4">
           {/* Profile Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-[1.2rem] w-[1.2rem]" />
-                <span className="sr-only">Menu do usuário</span>
-              </Button>
-            </DropdownMenuTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-[1.2rem] w-[1.2rem]" />
+                    <span className="sr-only">Menu do usuário</span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Menu do Usuário</TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link to="/game/profile">Perfil</Link>
@@ -70,13 +81,18 @@ export const Navbar: React.FC = () => {
 
           {/* Theme Toggle Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Alternar tema</span>
-              </Button>
-            </DropdownMenuTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <span className="sr-only">Alternar tema</span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Alternar tema</TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTheme("light")}>
                 Claro
