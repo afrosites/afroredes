@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom'; // Importar Link
 
 interface Message {
   id: string;
@@ -33,7 +34,7 @@ interface OnlinePlayer {
 const dummyMessages: Message[] = [
   { id: '1', sender: 'Mercador Elara', avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', content: 'Olá a todos! Alguém para uma missão?', timestamp: '10:00 AM', isUser: false },
   { id: '2', sender: 'Alquimista Kael', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', content: 'Estou na loja, venham ver minhas ofertas!', timestamp: '10:01 AM', isUser: false },
-  { id: '3', sender: 'Mestre Ferreiro', avatarUrl: 'https://images.unsplash.com/photo-1507003211169-e69fe254fe58?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8fHx8fA%3D%3D', content: 'Preciso de ervas raras para uma poção. Alguém pode ajudar?', timestamp: '10:05 AM', isUser: false },
+  { id: '3', sender: 'Mestre Ferreiro', avatarUrl: 'https://images.unsplash.com/photo-1507003211169-e69fe254fe58?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', content: 'Preciso de ervas raras para uma poção. Alguém pode ajudar?', timestamp: '10:05 AM', isUser: false },
 ];
 
 const Chat: React.FC = () => {
@@ -125,14 +126,14 @@ const Chat: React.FC = () => {
                   <p className="text-muted-foreground text-center py-4">Nenhum jogador online.</p>
                 ) : (
                   onlinePlayers.map((player) => (
-                    <div key={player.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
+                    <Link to={`/game/profile/${player.id}`} key={player.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={player.avatar_url || 'https://github.com/shadcn.png'} alt={getPlayerDisplayName(player)} />
                         <AvatarFallback>{getPlayerDisplayName(player).charAt(0)}</AvatarFallback>
                       </Avatar>
                       <span className="font-medium text-sm">{getPlayerDisplayName(player)}</span>
                       <Circle className="h-2 w-2 text-green-500 ml-auto" fill="currentColor" />
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>

@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from 'react-router-dom'; // Importar Link
 
 interface PlayerRanking {
   id: string;
@@ -14,7 +15,7 @@ interface PlayerRanking {
   last_name: string | null;
   level: number;
   class: string | null;
-  guilds: { name: string } | null;
+  guilds: { id: string; name: string } | null; // Incluir ID da guilda
 }
 
 interface GuildRanking {
@@ -39,7 +40,7 @@ const Ranking: React.FC = () => {
     setLoadingPlayers(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, level, class, guilds(name)')
+      .select('id, first_name, last_name, level, class, guilds(id, name)') // Selecionar ID da guilda
       .order('level', { ascending: false })
       .limit(100); // Limit to top 100 players
 
@@ -126,10 +127,22 @@ const Ranking: React.FC = () => {
                     {playerRanking.map((player, index) => (
                       <TableRow key={player.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{`${player.first_name || ''} ${player.last_name || ''}`.trim()}</TableCell>
+                        <TableCell>
+                          <Link to={`/game/profile/${player.id}`} className="text-blue-500 hover:underline">
+                            {`${player.first_name || ''} ${player.last_name || ''}`.trim()}
+                          </Link>
+                        </TableCell>
                         <TableCell>{player.class || 'Aventureiro'}</TableCell>
                         <TableCell>{player.level}</TableCell>
-                        <TableCell>{player.guilds?.name || 'Nenhuma'}</TableCell>
+                        <TableCell>
+                          {player.guilds ? (
+                            <Link to={`/game/guilds/${player.guilds.id}`} className="text-blue-500 hover:underline">
+                              {player.guilds.name}
+                            </Link>
+                          ) : (
+                            'Nenhuma'
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -166,7 +179,11 @@ const Ranking: React.FC = () => {
                     {guildRanking.map((guild, index) => (
                       <TableRow key={guild.id}>
                         <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{guild.name}</TableCell>
+                        <TableCell>
+                          <Link to={`/game/guilds/${guild.id}`} className="text-blue-500 hover:underline">
+                            {guild.name}
+                          </Link>
+                        </TableCell>
                         <TableCell>{guild.member_count}</TableCell>
                         <TableCell>{guild.description || 'N/A'}</TableCell>
                       </TableRow>

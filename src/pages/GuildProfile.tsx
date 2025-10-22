@@ -288,7 +288,7 @@ const GuildProfile: React.FC = () => {
                     <TableRow key={member.id} className={isLeader ? 'bg-yellow-100/20 dark:bg-yellow-900/20' : ''}>
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <Link to={`/game/profile/${member.id}`} className="flex items-center gap-2 text-blue-500 hover:underline">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={member.avatar_url || 'https://github.com/shadcn.png'} alt={getMemberDisplayName(member)} />
                             <AvatarFallback>{getMemberDisplayName(member).charAt(0)}</AvatarFallback>
@@ -302,7 +302,7 @@ const GuildProfile: React.FC = () => {
                               <TooltipContent>Líder da Guilda</TooltipContent>
                             </Tooltip>
                           )}
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={isLeader ? 'bg-yellow-500 text-white' : ''}>

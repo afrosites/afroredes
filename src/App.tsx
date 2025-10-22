@@ -18,7 +18,8 @@ import Dashboard from "./pages/Dashboard";
 import Map from "./pages/Map";
 import Shop from "./pages/Shop";
 import Chat from "./pages/Chat";
-import GuildProfile from "./pages/GuildProfile"; // Importar a nova página GuildProfile
+import GuildProfile from "./pages/GuildProfile";
+import PlayerProfile from "./pages/PlayerProfile"; // Importar a nova página PlayerProfile
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -43,9 +44,10 @@ const App = () => (
               <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
               <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
               <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />
-              <Route path="/game/guilds/:id" element={<GameLayout><GuildProfile /></GameLayout>} /> {/* Nova rota para o perfil da guilda */}
+              <Route path="/game/guilds/:id" element={<GameLayout><GuildProfile /></GameLayout>} />
               <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
               <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
+              <Route path="/game/profile/:id" element={<GameLayout><PlayerProfile /></GameLayout>} /> {/* Nova rota para o perfil de qualquer jogador */}
               <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
               <Route path="/game/shop" element={<GameLayout><Shop /></GameLayout>} />
               <Route path="/game/chat" element={<GameLayout><Chat /></GameLayout>} />
