@@ -3,19 +3,20 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft, ChevronRight } from "lucide-react" // Importar ChevronLeft e ChevronRight icons
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft, ChevronRight } from "lucide-react"
 import { SettingsMenu } from "./SettingsMenu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button" // Importar Button
+import { Button } from "@/components/ui/button"
 
 interface NavLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
   tooltipContent?: string;
+  sidebarOpen: boolean; // Adicionado prop para saber o estado da sidebar
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent, sidebarOpen }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -24,11 +25,12 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent
       to={to}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-        isActive && "bg-muted text-primary"
+        isActive && "bg-muted text-primary",
+        !sidebarOpen && "justify-center" // Centraliza o ícone quando a sidebar está fechada
       )}
     >
       <Icon className="h-4 w-4" />
-      {label}
+      {sidebarOpen && label} {/* Exibe o label apenas se a sidebar estiver aberta */}
     </Link>
   );
 
@@ -36,7 +38,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent
     return (
       <Tooltip>
         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-        <TooltipContent>{tooltipContent}</TooltipContent>
+        <TooltipContent side="right">{tooltipContent}</TooltipContent> {/* Tooltip à direita para ícones */}
       </Tooltip>
     );
   }
@@ -56,16 +58,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen })
     <div className="flex h-full max-h-screen flex-col gap-2 border-r bg-sidebar">
       <div className="flex h-16 items-center border-b px-4 lg:px-6 justify-between">
         <Link to="/game" className="flex items-center gap-2 font-semibold">
-          <span className="text-lg text-sidebar-foreground">Afro Redes</span>
+          {sidebarOpen && <span className="text-lg text-sidebar-foreground">Afro Redes</span>} {/* Título visível apenas quando aberto */}
         </Link>
-        {/* Botão de alternância para ocultar/mostrar a sidebar */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden lg:flex" // Ocultar em mobile, mostrar em desktop
+              className="md:hidden lg:flex"
             >
               <ToggleIcon className="h-5 w-5" />
               <span className="sr-only">{toggleTooltipContent}</span>
@@ -76,20 +77,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen })
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" tooltipContent="Visão geral do seu progresso" />
-          <NavLink to="/game" icon={User} label="Status" tooltipContent="Veja as estatísticas do seu personagem" />
-          <NavLink to="/game/map" icon={Map} label="Mapa do Mundo" tooltipContent="Explore o mapa do mundo" />
-          <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" tooltipContent="Gerencie seus itens" />
-          <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" tooltipContent="Gerencie suas habilidades e magias" />
-          <NavLink to="/game/quests" icon={ScrollText} label="Missões" tooltipContent="Aceite e complete missões" />
-          <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" />
-          <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" />
-          <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" />
+          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" tooltipContent="Visão geral do seu progresso" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game" icon={User} label="Status" tooltipContent="Veja as estatísticas do seu personagem" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/map" icon={Map} label="Mapa do Mundo" tooltipContent="Explore o mapa do mundo" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" tooltipContent="Gerencie seus itens" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" tooltipContent="Gerencie suas habilidades e magias" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/quests" icon={ScrollText} label="Missões" tooltipContent="Aceite e complete missões" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" sidebarOpen={sidebarOpen} />
         </nav>
       </div>
       <div className="mt-auto border-t py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <SettingsMenu />
+          {/* SettingsMenu também precisa da prop sidebarOpen se for ter comportamento similar */}
+          <SettingsMenu sidebarOpen={sidebarOpen} />
         </nav>
       </div>
     </div>

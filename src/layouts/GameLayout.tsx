@@ -25,13 +25,13 @@ const GameLayout: React.FC<GameLayoutProps> = ({ children }) => {
         {/* Sidebar é renderizado condicionalmente e animado */}
         <div className={cn(
           "fixed top-16 left-0 h-[calc(100vh-4rem)] flex-shrink-0 z-30 transition-all duration-300 ease-in-out",
-          sidebarOpen ? "w-64" : "w-0 overflow-hidden"
+          sidebarOpen ? "w-64" : "w-20" // Alterado de w-0 para w-20
         )}>
           <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         </div>
         <main className={cn(
           "flex-1 p-4 md:p-8 transition-all duration-300 ease-in-out",
-          !isMobile && sidebarOpen ? "md:ml-64" : "md:ml-0"
+          !isMobile && sidebarOpen ? "md:ml-64" : "md:ml-20" // Ajustado para md:ml-20
         )}>
           {children}
         </main>

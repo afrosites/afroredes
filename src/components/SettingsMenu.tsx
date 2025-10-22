@@ -12,9 +12,10 @@ interface NavLinkProps {
   label: string;
   indent?: boolean;
   tooltipContent?: string; // Adicionado para compatibilidade com Sidebar NavLink
+  sidebarOpen: boolean; // Adicionado prop para saber o estado da sidebar
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false, tooltipContent }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false, tooltipContent, sidebarOpen }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -24,11 +25,12 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
         isActive && "bg-muted text-primary",
-        indent && "pl-8"
+        indent && "pl-8",
+        !sidebarOpen && "justify-center" // Centraliza o ícone quando a sidebar está fechada
       )}
     >
       <Icon className="h-4 w-4" />
-      {label}
+      {sidebarOpen && label} {/* Exibe o label apenas se a sidebar estiver aberta */}
     </Link>
   );
 
@@ -36,15 +38,19 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false
     return (
       <Tooltip>
         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-        <TooltipContent>{tooltipContent}</TooltipContent>
+        <TooltipContent side="right">{tooltipContent}</TooltipContent> {/* Tooltip à direita para ícones */}
       </Tooltip>
     );
   }
   return linkContent;
 };
 
-export const SettingsMenu: React.FC = () => {
+interface SettingsMenuProps {
+  sidebarOpen: boolean;
+}
+
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({ sidebarOpen }) => {
   return (
-    <NavLink to="/game/settings" icon={Settings} label="Configurações" tooltipContent="Ajuste as configurações do jogo" />
+    <NavLink to="/game/settings" icon={Settings} label="Configurações" tooltipContent="Ajuste as configurações do jogo" sidebarOpen={sidebarOpen} />
   );
 };
