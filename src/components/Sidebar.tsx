@@ -3,16 +3,16 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, Settings, FileText, Gavel } from "lucide-react"
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User } from "lucide-react"
+import { SettingsMenu } from "./SettingsMenu" // Import the new SettingsMenu component
 
 interface NavLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
-  indent?: boolean; // Adiciona uma prop para indentação
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false }) => {
+const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -21,8 +21,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false
       to={to}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-        isActive && "bg-muted text-primary",
-        indent && "pl-8" // Aplica indentação se 'indent' for true
+        isActive && "bg-muted text-primary"
       )}
     >
       <Icon className="h-4 w-4" />
@@ -52,10 +51,7 @@ export const Sidebar: React.FC = () => {
       {/* Settings and Legal links at the bottom */}
       <div className="mt-auto border-t py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <NavLink to="/game/settings" icon={Settings} label="Configurações" />
-          {/* Sub-itens de configurações com indentação */}
-          <NavLink to="/game/privacy-policy" icon={FileText} label="Política de Privacidade" indent={true} />
-          <NavLink to="/game/lgpd" icon={Gavel} label="Lei LGPD" indent={true} />
+          <SettingsMenu /> {/* Usando o novo componente SettingsMenu */}
         </nav>
       </div>
     </div>
