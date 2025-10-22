@@ -78,7 +78,7 @@ export const Navbar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={handleShowNotification}>
-                <Bell className="h-[1.2rem] w-[1.2rem]" />
+                <Bell className="h-6 w-6" /> {/* Aumentado o tamanho */}
                 <span className="sr-only">Notificações</span>
               </Button>
             </TooltipTrigger>
@@ -91,8 +91,8 @@ export const Navbar: React.FC = () => {
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" /> {/* Aumentado o tamanho */}
+                    <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" /> {/* Aumentado o tamanho */}
                     <span className="sr-only">Alternar tema</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -118,7 +118,7 @@ export const Navbar: React.FC = () => {
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <User className="h-[1.2rem] w-[1.2rem]" />
+                    <User className="h-6 w-6" /> {/* Aumentado o tamanho */}
                     <span className="sr-only">Menu do usuário</span>
                   </Button>
                 </DropdownMenuTrigger>
