@@ -226,7 +226,7 @@ const Quests: React.FC = () => {
             <DialogDescription>
               Defina os detalhes da nova missão para os aventureiros.
             </DialogDescription>
-          </DialogDescription>
+          </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="questTitle" className="text-right">
