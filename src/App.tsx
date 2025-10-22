@@ -6,11 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Game from "./pages/Game";
-import Inventory from "./pages/Inventory"; // Import new pages
+import Inventory from "./pages/Inventory";
 import Skills from "./pages/Skills";
 import Quests from "./pages/Quests";
 import Guilds from "./pages/Guilds";
 import Ranking from "./pages/Ranking";
+import Profile from "./pages/Profile"; // Import new Profile page
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 
@@ -26,11 +27,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
-            <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} /> {/* New route */}
-            <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />       {/* New route */}
-            <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />       {/* New route */}
-            <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />       {/* New route */}
-            <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />     {/* New route */}
+            <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
+            <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
+            <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
+            <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />
+            <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
+            <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} /> {/* New route for Profile */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

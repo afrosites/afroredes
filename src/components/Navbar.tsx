@@ -4,9 +4,9 @@ import React from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Moon, Sun } from "lucide-react"
+import { Menu, Moon, Sun, User } from "lucide-react" // Import User icon
 import { useTheme } from "next-themes"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu" // Import DropdownMenuSeparator
 import { Sidebar } from "./Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -35,6 +35,26 @@ export const Navbar: React.FC = () => {
           </Link>
         </div>
         <div className="flex items-center space-x-4">
+          {/* Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <User className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">User menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/game/profile">Perfil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => console.log("Logout clicked")}>
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Theme Toggle Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
