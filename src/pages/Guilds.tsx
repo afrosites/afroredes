@@ -14,6 +14,7 @@ import { PlusCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
+import { Link } from 'react-router-dom'; // Importar Link
 
 interface Guild {
   id: string;
@@ -151,9 +152,11 @@ const Guilds: React.FC = () => {
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="outline" disabled={!user}>
-                          Ver Detalhes
-                        </Button>
+                        <Link to={`/game/guilds/${guild.id}`}> {/* Link para a página de perfil da guilda */}
+                          <Button variant="outline" disabled={!user}>
+                            Ver Detalhes
+                          </Button>
+                        </Link>
                       </TooltipTrigger>
                       <TooltipContent>Veja os detalhes desta guilda</TooltipContent>
                     </Tooltip>
