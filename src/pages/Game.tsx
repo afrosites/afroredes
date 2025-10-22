@@ -1,7 +1,6 @@
 import React from 'react';
 import CharacterSheet from '@/components/CharacterSheet';
-import { MadeWithDyad } from '@/components/made-with-dyad';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Importação adicionada
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Game: React.FC = () => {
   // Exemplo de dados do personagem
@@ -15,7 +14,7 @@ const Game: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
+    <div className="flex flex-col items-center justify-center"> {/* Ajustado para o layout */}
       <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100">Bem-vindo ao RPG!</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl">
         <CharacterSheet {...playerCharacter} />
@@ -37,7 +36,7 @@ const Game: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-      <MadeWithDyad />
+      {/* MadeWithDyad removido daqui, agora está no Footer */}
     </div>
   );
 };
