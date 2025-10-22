@@ -10,13 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
-import { PlusCircle, Image as ImageIcon } from 'lucide-react'; // Adicionado ImageIcon
+import { PlusCircle, Image as ImageIcon, Users, Star } from 'lucide-react'; // Adicionado Users e Star
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from 'react-router-dom';
 import AvatarGallery from '@/components/AvatarGallery'; // Importar AvatarGallery
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Importar Avatar
+import { Badge } from '@/components/ui/badge'; // Importar Badge
 
 interface Guild {
   id: string;
@@ -152,16 +153,25 @@ const Guilds: React.FC = () => {
             <ScrollArea className="h-[400px] pr-4">
               <div className="grid gap-4">
                 {guilds.map((guild) => (
-                  <Card key={guild.id} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
+                  <Card key={guild.id} className="flex flex-col sm:flex-row items-center justify-between p-4">
+                    <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                      <Avatar className="h-16 w-16">
                         <AvatarImage src={guild.avatar_url || 'https://github.com/shadcn.png'} alt={guild.name} />
-                        <AvatarFallback>{guild.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="text-xl font-bold">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <h3 className="text-lg font-semibold">{guild.name}</h3>
+                      <div className="text-center sm:text-left">
+                        <h3 className="text-xl font-semibold">{guild.name}</h3>
                         <p className="text-sm text-muted-foreground">{guild.description || 'Nenhuma descrição.'}</p>
-                        <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0} | Nível: {guild.level}</p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Star className="h-3 w-3" /> Nível {guild.level}
+                          </Badge>
+                          <Badge variant="secondary" className="flex items-center gap-1">
+                            <Users className="h-3 w-3" /> {guild.member_count || 0} Membros
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                     <Tooltip>
