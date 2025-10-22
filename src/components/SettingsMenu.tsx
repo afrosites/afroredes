@@ -29,7 +29,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, indent = false
         !sidebarOpen && "justify-center" // Centraliza o ícone quando a sidebar está fechada
       )}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="h-5 w-5" /> {/* Aumentado o tamanho do ícone aqui */}
       {sidebarOpen && label} {/* Exibe o label apenas se a sidebar estiver aberta */}
     </Link>
   );
