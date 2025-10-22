@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
           {!isMobile && <UserStatsDisplay />}
         </div>
 
-        {/* Seção Direita: Notificação, Perfil, Tema */}
+        {/* Seção Direita: Notificação, Tema, Perfil */}
         <div className="flex items-center space-x-4">
           {/* Ícone de Notificação */}
           <Tooltip>
@@ -85,31 +85,7 @@ export const Navbar: React.FC = () => {
             <TooltipContent>Ver Notificações</TooltipContent>
           </Tooltip>
 
-          {/* Dropdown de Perfil (agora primeiro) */}
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-[1.2rem] w-[1.2rem]" />
-                    <span className="sr-only">Menu do usuário</span>
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>Menu do Usuário</TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link to="/game/profile">Perfil</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Dropdown de Alternância de Tema (agora segundo) */}
+          {/* Dropdown de Alternância de Tema (agora primeiro) */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -132,6 +108,30 @@ export const Navbar: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("system")}>
                 Sistema
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Dropdown de Perfil (agora segundo) */}
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-[1.2rem] w-[1.2rem]" />
+                    <span className="sr-only">Menu do usuário</span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Menu do Usuário</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/game/profile">Perfil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
