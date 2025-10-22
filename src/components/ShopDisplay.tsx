@@ -158,8 +158,8 @@ const ShopDisplay: React.FC = () => {
         </CardTitle>
         <CardDescription>Compre novos equipamentos e consumíveis para sua aventura.</CardDescription>
         {user && (
-          <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground mt-2">
-            <Coins className="h-4 w-4 text-yellow-600" />
+          <div className="flex items-center gap-1 text-lg font-bold text-yellow-600 mt-2"> {/* Aumentado o tamanho do texto do ouro */}
+            <Coins className="h-5 w-5" />
             <span>Seu Ouro: {userGold}</span>
           </div>
         )}
@@ -199,18 +199,31 @@ const ShopDisplay: React.FC = () => {
                 shopItems.map((item) => {
                   const Icon = getItemIcon(item.icon_name, item.item_type);
                   return (
-                    <Card
-                      key={item.id}
-                      className="flex flex-col items-center text-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      <Icon className="h-12 w-12 mb-2 text-primary" />
-                      <h3 className="text-lg font-semibold">{item.name}</h3>
-                      <Badge variant="outline" className="mt-1 capitalize">{translateItemType(item.item_type)}</Badge>
-                      <p className="flex items-center gap-1 text-sm font-medium mt-2">
-                        <Coins className="h-4 w-4 text-yellow-600" /> {item.price_gold}
-                      </p>
-                    </Card>
+                    <Tooltip key={item.id}>
+                      <TooltipTrigger asChild>
+                        <Card
+                          className="flex flex-col items-center text-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                          onClick={() => setSelectedItem(item)}
+                        >
+                          <Icon className="h-12 w-12 mb-2 text-primary" />
+                          <h3 className="text-lg font-semibold">{item.name}</h3>
+                          <Badge variant="outline" className="mt-1 capitalize">{translateItemType(item.item_type)}</Badge>
+                          <p className="flex items-center gap-1 text-lg font-bold mt-2 text-yellow-600"> {/* Aumentado o tamanho do texto do preço */}
+                            <Coins className="h-5 w-5" /> {item.price_gold}
+                          </p>
+                        </Card>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        {item.attack_bonus > 0 && <p className="text-xs">Ataque: +{item.attack_bonus}</p>}
+                        {item.defense_bonus > 0 && <p className="text-xs">Defesa: +{item.defense_bonus}</p>}
+                        {item.health_restore > 0 && <p className="text-xs">Restaura Saúde: {item.health_restore}</p>}
+                        <p className="text-xs text-yellow-600 flex items-center gap-1 mt-1">
+                          <Coins className="h-3 w-3" /> Preço: {item.price_gold}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   );
                 })
               )}
@@ -232,12 +245,12 @@ const ShopDisplay: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 py-4">
-            <p className="text-sm">Tipo: <Badge variant="secondary" className="capitalize">{selectedItem && translateItemType(selectedItem.item_type)}</Badge></p>
-            {selectedItem?.attack_bonus > 0 && <p className="text-sm">Bônus de Ataque: +{selectedItem.attack_bonus}</p>}
-            {selectedItem?.defense_bonus > 0 && <p className="text-sm">Bônus de Defesa: +{selectedItem.defense_bonus}</p>}
-            {selectedItem?.health_restore > 0 && <p className="text-sm">Restaura Saúde: {selectedItem.health_restore}</p>}
-            <p className="flex items-center gap-1 text-lg font-bold mt-4">
-              Preço: <Coins className="h-5 w-5 text-yellow-600" /> {selectedItem?.price_gold}
+            <p className="text-base">Tipo: <Badge variant="secondary" className="capitalize text-base">{selectedItem && translateItemType(selectedItem.item_type)}</Badge></p>
+            {selectedItem?.attack_bonus > 0 && <p className="text-base">Bônus de Ataque: <span className="font-semibold text-primary">+{selectedItem.attack_bonus}</span></p>}
+            {selectedItem?.defense_bonus > 0 && <p className="text-base">Bônus de Defesa: <span className="font-semibold text-primary">+{selectedItem.defense_bonus}</span></p>}
+            {selectedItem?.health_restore > 0 && <p className="text-base">Restaura Saúde: <span className="font-semibold text-green-500">{selectedItem.health_restore}</span></p>}
+            <p className="flex items-center gap-1 text-xl font-bold mt-4 text-yellow-600">
+              Preço: <Coins className="h-6 w-6" /> {selectedItem?.price_gold}
             </p>
           </div>
           <DialogFooter>
