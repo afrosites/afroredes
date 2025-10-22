@@ -4,7 +4,7 @@ import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Moon, Sun, User } from "lucide-react"
+import { Menu, Moon, Sun, User, Bell } from "lucide-react" // Importar o ícone Bell
 import { useTheme } from "next-themes"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Sidebar } from "./Sidebar"
@@ -27,6 +27,16 @@ export const Navbar: React.FC = () => {
       toast.success("Você saiu com sucesso!");
       navigate('/login');
     }
+  };
+
+  const handleShowNotification = () => {
+    toast.info("Você tem uma nova notificação!", {
+      description: "Sua missão diária foi atualizada.",
+      action: {
+        label: "Ver",
+        onClick: () => console.log("Ver notificação"),
+      },
+    });
   };
 
   return (
@@ -55,7 +65,42 @@ export const Navbar: React.FC = () => {
           </Link>
         </div>
         <div className="flex items-center space-x-4">
-          {/* Theme Toggle Dropdown (agora primeiro) */}
+          {/* Notification Icon */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={handleShowNotification}>
+                <Bell className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Notificações</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Ver Notificações</TooltipContent>
+          </Tooltip>
+
+          {/* Profile Dropdown */}
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-[1.2rem] w-[1.2rem]" />
+                    <span className="sr-only">Menu do usuário</span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Menu do Usuário</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/game/profile">Perfil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Theme Toggle Dropdown */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -78,30 +123,6 @@ export const Navbar: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("system")}>
                 Sistema
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Profile Dropdown (agora segundo) */}
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-[1.2rem] w-[1.2rem]" />
-                    <span className="sr-only">Menu do usuário</span>
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>Menu do Usuário</TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link to="/game/profile">Perfil</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
