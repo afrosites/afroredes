@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Link, useNavigate } from "react-router-dom" // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, Moon, Sun, User } from "lucide-react"
@@ -9,13 +9,13 @@ import { useTheme } from "next-themes"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Sidebar } from "./Sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { supabase } from "@/integrations/supabase/client" // Import supabase client
-import { toast } from "sonner" // Import toast for notifications
+import { supabase } from "@/integrations/supabase/client"
+import { toast } from "sonner"
 
 export const Navbar: React.FC = () => {
   const { setTheme } = useTheme()
   const isMobile = useIsMobile()
-  const navigate = useNavigate() // Initialize useNavigate
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -24,7 +24,7 @@ export const Navbar: React.FC = () => {
       console.error("Logout error:", error);
     } else {
       toast.success("Você saiu com sucesso!");
-      navigate('/login'); // Redirect to login page after logout
+      navigate('/login');
     }
   };
 
@@ -45,7 +45,7 @@ export const Navbar: React.FC = () => {
             </Sheet>
           )}
           <Link to="/game" className="text-2xl font-bold tracking-tight">
-            RPG Game
+            Jogo de RPG
           </Link>
         </div>
         <div className="flex items-center space-x-4">
@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <User className="h-[1.2rem] w-[1.2rem]" />
-                <span className="sr-only">User menu</span>
+                <span className="sr-only">Menu do usuário</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -62,7 +62,7 @@ export const Navbar: React.FC = () => {
                 <Link to="/game/profile">Perfil</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}> {/* Call handleLogout */}
+              <DropdownMenuItem onClick={handleLogout}>
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -74,18 +74,18 @@ export const Navbar: React.FC = () => {
               <Button variant="ghost" size="icon">
                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
+                <span className="sr-only">Alternar tema</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
+                Claro
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
+                Escuro
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
+                Sistema
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

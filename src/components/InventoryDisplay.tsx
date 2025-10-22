@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Sword, Shield, Gem, ScrollText, Droplet, Backpack } from 'lucide-react'; // Changed Bottle to Droplet
+import { Sword, Shield, Gem, ScrollText, Droplet, Backpack } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface InventoryItem {
@@ -15,7 +15,7 @@ interface InventoryItem {
   description: string;
   quantity: number;
   type: 'weapon' | 'armor' | 'consumable' | 'quest' | 'misc';
-  icon?: React.ElementType; // Optional icon component
+  icon?: React.ElementType;
 }
 
 const getItemIcon = (type: InventoryItem['type']) => {
@@ -25,13 +25,30 @@ const getItemIcon = (type: InventoryItem['type']) => {
     case 'armor':
       return Shield;
     case 'consumable':
-      return Droplet; // Changed Bottle to Droplet
+      return Droplet;
     case 'quest':
       return ScrollText;
     case 'misc':
       return Gem;
     default:
       return Backpack;
+  }
+};
+
+const translateItemType = (type: InventoryItem['type']) => {
+  switch (type) {
+    case 'weapon':
+      return 'Arma';
+    case 'armor':
+      return 'Armadura';
+    case 'consumable':
+      return 'Consumível';
+    case 'quest':
+      return 'Missão';
+    case 'misc':
+      return 'Diversos';
+    default:
+      return 'Item';
   }
 };
 
@@ -78,7 +95,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({ items }) => {
                       <Icon className="h-5 w-5 mr-3 text-muted-foreground" />
                       <div className="flex-1 text-left">
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.type}</p>
+                        <p className="text-xs text-muted-foreground">{translateItemType(item.type)}</p>
                       </div>
                       <Badge variant="secondary">{item.quantity}</Badge>
                     </Button>
@@ -101,7 +118,7 @@ const InventoryDisplay: React.FC<InventoryDisplayProps> = ({ items }) => {
                 )}
                 <div>
                   <h3 className="text-2xl font-bold">{selectedItem.name}</h3>
-                  <Badge variant="outline" className="mt-1 capitalize">{selectedItem.type}</Badge>
+                  <Badge variant="outline" className="mt-1 capitalize">{translateItemType(selectedItem.type)}</Badge>
                 </div>
               </div>
               <Separator className="my-4" />
