@@ -1,6 +1,7 @@
 import React from 'react';
 import CharacterSheet from '@/components/CharacterSheet';
 import { MadeWithDyad } from '@/components/made-with-dyad';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Importação adicionada
 
 const Game: React.FC = () => {
   // Exemplo de dados do personagem
