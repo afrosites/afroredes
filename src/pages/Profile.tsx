@@ -15,8 +15,8 @@ import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import AvatarGallery from '@/components/AvatarGallery';
-import { Badge } from '@/components/ui/badge';
+import AvatarGallery from '@/components/AvatarGallery'; // Importar AvatarGallery
+import { Badge } from '@/components/ui/badge'; // Importar Badge
 
 interface ProfileData {
   first_name: string | null;
@@ -215,54 +215,53 @@ const Profile: React.FC = () => {
 
       {/* Dialog for editing profile */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="sm:max-w-[500px] p-6">
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Editar Perfil</DialogTitle>
+            <DialogTitle>Editar Perfil</DialogTitle>
             <DialogDescription>
-              Atualize suas informações de personagem e personalize seu avatar.
+              Atualize suas informações de personagem.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-6 py-4">
-            {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">Primeiro Nome</Label>
-                <Input
-                  id="firstName"
-                  value={firstNameInput}
-                  onChange={(e) => setFirstNameInput(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Sobrenome</Label>
-                <Input
-                  id="lastName"
-                  value={lastNameInput}
-                  onChange={(e) => setLastNameInput(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="firstName" className="text-right">
+                Primeiro Nome
+              </Label>
+              <Input
+                id="firstName"
+                value={firstNameInput}
+                onChange={(e) => setFirstNameInput(e.target.value)}
+                className="col-span-3"
+                disabled={isSubmitting}
+              />
             </div>
-
-            {/* Avatar Selection */}
-            <div className="space-y-2">
-              <Label>Avatar</Label>
-              <div className="flex items-center gap-3">
-                <Avatar className="h-12 w-12 border-2 border-primary">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="lastName" className="text-right">
+                Sobrenome
+              </Label>
+              <Input
+                id="lastName"
+                value={lastNameInput}
+                onChange={(e) => setLastNameInput(e.target.value)}
+                className="col-span-3"
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Avatar</Label>
+              <div className="col-span-3 flex items-center gap-2">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={avatarUrlInput || 'https://github.com/shadcn.png'} alt="Profile Avatar" />
                   <AvatarFallback>
-                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
                   </AvatarFallback>
                 </Avatar>
                 <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmitting}>
-                  <ImageIcon className="mr-2 h-4 w-4" /> Selecionar Avatar
+                  Selecionar Avatar
                 </Button>
               </div>
             </div>
-
-            {/* Bio */}
-            <div className="space-y-2">
+            <div>
               <Label htmlFor="bio">Biografia</Label>
               <Textarea
                 id="bio"
@@ -270,84 +269,81 @@ const Profile: React.FC = () => {
                 onChange={(e) => setBioInput(e.target.value)}
                 placeholder="Conte-nos um pouco sobre você..."
                 disabled={isSubmitting}
-                rows={3}
               />
             </div>
-
-            {/* Class and Level */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="class">Classe</Label>
-                <Input
-                  id="class"
-                  value={classInput}
-                  onChange={(e) => setClassInput(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="level">Nível</Label>
-                <Input
-                  id="level"
-                  type="number"
-                  value={levelInput}
-                  onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
-                  min="1"
-                  disabled={isSubmitting}
-                />
-              </div>
+            <div>
+              <Label htmlFor="class">Classe</Label>
+              <Input
+                id="class"
+                value={classInput}
+                onChange={(e) => setClassInput(e.target.value)}
+                disabled={isSubmitting}
+              />
             </div>
-
-            {/* Status and Gender */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select value={statusInput} onValueChange={setStatusInput} disabled={isSubmitting}>
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Selecionar Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Online">Online</SelectItem>
-                    <SelectItem value="Ausente">Ausente</SelectItem>
-                    <SelectItem value="Ocupado">Ocupado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gênero</Label>
-                <Select value={genderInput} onValueChange={setGenderInput} disabled={isSubmitting}>
-                  <SelectTrigger id="gender">
-                    <SelectValue placeholder="Selecionar Gênero" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Masculino">Masculino</SelectItem>
-                    <SelectItem value="Feminino">Feminino</SelectItem>
-                    <SelectItem value="Não Binário">Não Binário</SelectItem>
-                    <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label htmlFor="level">Nível</Label>
+              <Input
+                id="level"
+                type="number"
+                value={levelInput}
+                onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
+                min="1"
+                disabled={isSubmitting}
+              />
             </div>
-
-            {/* Guild Role (read-only) */}
-            <div className="space-y-2">
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={statusInput} onValueChange={setStatusInput} disabled={isSubmitting}>
+                <SelectTrigger id="status" className="w-full">
+                  <SelectValue placeholder="Selecionar Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Online">Online</SelectItem>
+                  <SelectItem value="Ausente">Ausente</SelectItem>
+                  <SelectItem value="Ocupado">Ocupado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="gender">Gênero</Label>
+              <Select value={genderInput} onValueChange={setGenderInput} disabled={isSubmitting}>
+                <SelectTrigger id="gender" className="w-full">
+                  <SelectValue placeholder="Selecionar Gênero" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Masculino">Masculino</SelectItem>
+                  <SelectItem value="Feminino">Feminino</SelectItem>
+                  <SelectItem value="Não Binário">Não Binário</SelectItem>
+                  <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="guildRole">Cargo na Guilda</Label>
               <Input
                 id="guildRole"
-                value={profile?.guild_role || 'Nenhum'}
-                disabled
-                className="bg-muted cursor-not-allowed"
+                value={guildRoleInput || 'Nenhum'}
+                disabled // Não editável diretamente aqui
               />
-              <p className="text-sm text-muted-foreground">O cargo na guilda é definido pela sua guilda.</p>
             </div>
           </div>
-          <DialogFooter className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
-              Cancelar
-            </Button>
-            <Button onClick={handleUpdateProfile} disabled={isSubmitting}>
-              {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
-            </Button>
+          <DialogFooter>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Descartar alterações no perfil</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleUpdateProfile} disabled={isSubmitting}>
+                  {isSubmitting ? 'Salvando...' : 'Salvar'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Salvar as alterações no perfil</TooltipContent>
+            </Tooltip>
           </DialogFooter>
         </DialogContent>
       </Dialog>
