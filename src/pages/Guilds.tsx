@@ -10,11 +10,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Image as ImageIcon } from 'lucide-react'; // Adicionado ImageIcon
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from 'react-router-dom';
+import AvatarGallery from '@/components/AvatarGallery'; // Importar AvatarGallery
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Importar Avatar
 
 interface Guild {
   id: string;
@@ -22,8 +24,9 @@ interface Guild {
   description: string | null;
   created_by: string;
   created_at: string;
-  level: number; // Adicionado level
+  level: number;
   member_count?: number;
+  avatar_url: string | null; // Adicionado avatar_url
 }
 
 const Guilds: React.FC = () => {
@@ -33,6 +36,8 @@ const Guilds: React.FC = () => {
   const [isCreatingGuild, setIsCreatingGuild] = useState(false);
   const [newGuildName, setNewGuildName] = useState('');
   const [newGuildDescription, setNewGuildDescription] = useState('');
+  const [newGuildAvatarUrl, setNewGuildAvatarUrl] = useState<string | null>(null); // Estado para o avatar da guilda
+  const [isAvatarGalleryOpen, setIsAvatarGalleryOpen] = useState(false); // Estado para a galeria de avatares
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -43,7 +48,7 @@ const Guilds: React.FC = () => {
     setLoadingGuilds(true);
     const { data: guildsData, error: guildsError } = await supabase
       .from('guilds')
-      .select('id, name, description, created_by, created_at, level'); // Selecionar level
+      .select('id, name, description, created_by, created_at, level, avatar_url'); // Selecionar avatar_url
 
     if (guildsError) {
       toast.error("Erro ao carregar guildas: " + guildsError.message);
@@ -89,7 +94,8 @@ const Guilds: React.FC = () => {
         name: newGuildName.trim(),
         description: newGuildDescription.trim() || null,
         created_by: user.id,
-        level: 1, // Nova guilda começa no nível 1
+        level: 1,
+        avatar_url: newGuildAvatarUrl, // Salvar o avatar selecionado
       })
       .select()
       .single();
@@ -103,12 +109,12 @@ const Guilds: React.FC = () => {
       }
     } else if (data) {
       toast.success(`Guilda "${data.name}" criada com sucesso!`);
-      // Atualiza o perfil do criador para entrar na guilda e definir como Líder
       await supabase.from('profiles').update({ guild_id: data.id, guild_role: 'Líder' }).eq('id', user.id);
       fetchGuilds();
       setIsCreatingGuild(false);
       setNewGuildName('');
       setNewGuildDescription('');
+      setNewGuildAvatarUrl(null); // Resetar avatar
     }
     setIsSubmitting(false);
   };
@@ -147,10 +153,16 @@ const Guilds: React.FC = () => {
               <div className="grid gap-4">
                 {guilds.map((guild) => (
                   <Card key={guild.id} className="flex items-center justify-between p-4">
-                    <div>
-                      <h3 className="text-lg font-semibold">{guild.name}</h3>
-                      <p className="text-sm text-muted-foreground">{guild.description || 'Nenhuma descrição.'}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0} | Nível: {guild.level}</p>
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={guild.avatar_url || 'https://github.com/shadcn.png'} alt={guild.name} />
+                        <AvatarFallback>{guild.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="text-lg font-semibold">{guild.name}</h3>
+                        <p className="text-sm text-muted-foreground">{guild.description || 'Nenhuma descrição.'}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0} | Nível: {guild.level}</p>
+                      </div>
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -204,6 +216,20 @@ const Guilds: React.FC = () => {
                 disabled={isSubmitting}
               />
             </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Avatar</Label>
+              <div className="col-span-3 flex items-center gap-2">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={newGuildAvatarUrl || 'https://github.com/shadcn.png'} alt="Guild Avatar" />
+                  <AvatarFallback>
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  </AvatarFallback>
+                </Avatar>
+                <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmitting}>
+                  Selecionar Avatar
+                </Button>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Tooltip>
@@ -225,6 +251,16 @@ const Guilds: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AvatarGallery
+        isOpen={isAvatarGalleryOpen}
+        onClose={() => setIsAvatarGalleryOpen(false)}
+        onSelectAvatar={(url) => {
+          setNewGuildAvatarUrl(url);
+          setIsAvatarGalleryOpen(false);
+        }}
+        selectedAvatarUrl={newGuildAvatarUrl}
+      />
     </div>
   );
 };
