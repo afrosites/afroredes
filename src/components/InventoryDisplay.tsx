@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Sword, Shield, Gem, ScrollText, Flask, Backpack } from 'lucide-react';
+import { Sword, Shield, Gem, ScrollText, Bottle, Backpack } from 'lucide-react'; // Changed Flask to Bottle
 import { cn } from '@/lib/utils';
 
 interface InventoryItem {
@@ -25,7 +25,7 @@ const getItemIcon = (type: InventoryItem['type']) => {
     case 'armor':
       return Shield;
     case 'consumable':
-      return Flask;
+      return Bottle; // Changed Flask to Bottle
     case 'quest':
       return ScrollText;
     case 'misc':

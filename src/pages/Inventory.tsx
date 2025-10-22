@@ -1,6 +1,6 @@
 import React from 'react';
 import InventoryDisplay from '@/components/InventoryDisplay';
-import { Sword, Shield, Gem, ScrollText, Flask } from 'lucide-react';
+import { Sword, Shield, Gem, ScrollText, Bottle } from 'lucide-react'; // Changed Flask to Bottle
 
 const dummyInventoryItems = [
   {
@@ -25,7 +25,7 @@ const dummyInventoryItems = [
     description: 'Restaura uma pequena quantidade de pontos de vida. Use com sabedoria!',
     quantity: 3,
     type: 'consumable',
-    icon: Flask,
+    icon: Bottle, // Changed Flask to Bottle
   },
   {
     id: '4',
@@ -57,7 +57,7 @@ const dummyInventoryItems = [
     description: 'Restaura uma pequena quantidade de pontos de mana.',
     quantity: 2,
     type: 'consumable',
-    icon: Flask,
+    icon: Bottle, // Changed Flask to Bottle
   },
 ];
 
