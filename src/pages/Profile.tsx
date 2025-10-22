@@ -215,7 +215,7 @@ const Profile: React.FC = () => {
 
       {/* Dialog for editing profile */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[500px]"> {/* Aumentado a largura do modal */}
           <DialogHeader>
             <DialogTitle>Editar Perfil</DialogTitle>
             <DialogDescription>
@@ -223,45 +223,42 @@ const Profile: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="firstName" className="text-right">
-                Primeiro Nome
-              </Label>
-              <Input
-                id="firstName"
-                value={firstNameInput}
-                onChange={(e) => setFirstNameInput(e.target.value)}
-                className="col-span-3"
-                disabled={isSubmitting}
-              />
+            {/* Avatar Selection */}
+            <div className="flex flex-col items-center gap-2 mb-4">
+              <Label className="text-lg font-semibold">Avatar</Label>
+              <Avatar className="h-24 w-24 border-2 border-primary shadow-md">
+                <AvatarImage src={avatarUrlInput || 'https://github.com/shadcn.png'} alt="Profile Avatar" />
+                <AvatarFallback>
+                  <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmitting}>
+                Selecionar Avatar
+              </Button>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="lastName" className="text-right">
-                Sobrenome
-              </Label>
-              <Input
-                id="lastName"
-                value={lastNameInput}
-                onChange={(e) => setLastNameInput(e.target.value)}
-                className="col-span-3"
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Avatar</Label>
-              <div className="col-span-3 flex items-center gap-2">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={avatarUrlInput || 'https://github.com/shadcn.png'} alt="Profile Avatar" />
-                  <AvatarFallback>
-                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-                <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmitting}>
-                  Selecionar Avatar
-                </Button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">Primeiro Nome</Label>
+                <Input
+                  id="firstName"
+                  value={firstNameInput}
+                  onChange={(e) => setFirstNameInput(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Sobrenome</Label>
+                <Input
+                  id="lastName"
+                  value={lastNameInput}
+                  onChange={(e) => setLastNameInput(e.target.value)}
+                  disabled={isSubmitting}
+                />
               </div>
             </div>
-            <div>
+
+            <div className="space-y-2">
               <Label htmlFor="bio">Biografia</Label>
               <Textarea
                 id="bio"
@@ -269,56 +266,63 @@ const Profile: React.FC = () => {
                 onChange={(e) => setBioInput(e.target.value)}
                 placeholder="Conte-nos um pouco sobre você..."
                 disabled={isSubmitting}
+                rows={3}
               />
             </div>
-            <div>
-              <Label htmlFor="class">Classe</Label>
-              <Input
-                id="class"
-                value={classInput}
-                onChange={(e) => setClassInput(e.target.value)}
-                disabled={isSubmitting}
-              />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="class">Classe</Label>
+                <Input
+                  id="class"
+                  value={classInput}
+                  onChange={(e) => setClassInput(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="level">Nível</Label>
+                <Input
+                  id="level"
+                  type="number"
+                  value={levelInput}
+                  onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
+                  min="1"
+                  disabled={isSubmitting}
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="level">Nível</Label>
-              <Input
-                id="level"
-                type="number"
-                value={levelInput}
-                onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
-                min="1"
-                disabled={isSubmitting}
-              />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select value={statusInput} onValueChange={setStatusInput} disabled={isSubmitting}>
+                  <SelectTrigger id="status" className="w-full">
+                    <SelectValue placeholder="Selecionar Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Online">Online</SelectItem>
+                    <SelectItem value="Ausente">Ausente</SelectItem>
+                    <SelectItem value="Ocupado">Ocupado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gênero</Label>
+                <Select value={genderInput} onValueChange={setGenderInput} disabled={isSubmitting}>
+                  <SelectTrigger id="gender" className="w-full">
+                    <SelectValue placeholder="Selecionar Gênero" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Masculino">Masculino</SelectItem>
+                    <SelectItem value="Feminino">Feminino</SelectItem>
+                    <SelectItem value="Não Binário">Não Binário</SelectItem>
+                    <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={statusInput} onValueChange={setStatusInput} disabled={isSubmitting}>
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Selecionar Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Online">Online</SelectItem>
-                  <SelectItem value="Ausente">Ausente</SelectItem>
-                  <SelectItem value="Ocupado">Ocupado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="gender">Gênero</Label>
-              <Select value={genderInput} onValueChange={setGenderInput} disabled={isSubmitting}>
-                <SelectTrigger id="gender" className="w-full">
-                  <SelectValue placeholder="Selecionar Gênero" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Masculino">Masculino</SelectItem>
-                  <SelectItem value="Feminino">Feminino</SelectItem>
-                  <SelectItem value="Não Binário">Não Binário</SelectItem>
-                  <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="guildRole">Cargo na Guilda</Label>
               <Input
                 id="guildRole"
