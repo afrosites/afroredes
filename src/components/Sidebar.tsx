@@ -3,7 +3,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft } from "lucide-react" // Importar ChevronLeft icon
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft, ChevronRight } from "lucide-react" // Importar ChevronLeft e ChevronRight icons
 import { SettingsMenu } from "./SettingsMenu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button" // Importar Button
@@ -49,28 +49,30 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const ToggleIcon = sidebarOpen ? ChevronLeft : ChevronRight;
+  const toggleTooltipContent = sidebarOpen ? "Ocultar menu lateral" : "Mostrar menu lateral";
+
   return (
     <div className="flex h-full max-h-screen flex-col gap-2 border-r bg-sidebar">
-      <div className="flex h-16 items-center border-b px-4 lg:px-6 justify-between"> {/* Adicionado justify-between */}
+      <div className="flex h-16 items-center border-b px-4 lg:px-6 justify-between">
         <Link to="/game" className="flex items-center gap-2 font-semibold">
           <span className="text-lg text-sidebar-foreground">RPG Menu</span>
         </Link>
-        {sidebarOpen && ( // Mostrar o botão apenas se a sidebar estiver aberta
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(false)}
-                className="md:hidden lg:flex" // Ocultar em mobile, mostrar em desktop
-              >
-                <ChevronLeft className="h-5 w-5" />
-                <span className="sr-only">Ocultar menu</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Ocultar menu lateral</TooltipContent>
-          </Tooltip>
-        )}
+        {/* Botão de alternância para ocultar/mostrar a sidebar */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden lg:flex" // Ocultar em mobile, mostrar em desktop
+            >
+              <ToggleIcon className="h-5 w-5" />
+              <span className="sr-only">{toggleTooltipContent}</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{toggleTooltipContent}</TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
