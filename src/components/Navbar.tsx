@@ -4,7 +4,7 @@ import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Moon, Sun, User, Bell } from "lucide-react" // Importar o ícone Bell
+import { Menu, Moon, Sun, User, Bell } from "lucide-react"
 import { useTheme } from "next-themes"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Sidebar } from "./Sidebar"
@@ -12,6 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import UserStatsDisplay from './UserStatsDisplay'; // Importar o novo componente
 
 export const Navbar: React.FC = () => {
   const { setTheme } = useTheme()
@@ -41,7 +42,8 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-16 items-center justify-between py-4">
+      <div className="container flex h-16 items-center py-4">
+        {/* Seção Esquerda: Menu Mobile (se for mobile) e Título do App */}
         <div className="flex items-center">
           {isMobile && (
             <Sheet>
@@ -64,8 +66,15 @@ export const Navbar: React.FC = () => {
             Jogo de RPG
           </Link>
         </div>
+
+        {/* Seção Central: Exibição de Estatísticas do Usuário (apenas em desktop) */}
+        <div className="flex-1 flex justify-center">
+          {!isMobile && <UserStatsDisplay />}
+        </div>
+
+        {/* Seção Direita: Notificação, Perfil, Tema */}
         <div className="flex items-center space-x-4">
-          {/* Notification Icon */}
+          {/* Ícone de Notificação */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={handleShowNotification}>
@@ -76,7 +85,7 @@ export const Navbar: React.FC = () => {
             <TooltipContent>Ver Notificações</TooltipContent>
           </Tooltip>
 
-          {/* Profile Dropdown */}
+          {/* Dropdown de Perfil */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -100,7 +109,7 @@ export const Navbar: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Theme Toggle Dropdown */}
+          {/* Dropdown de Alternância de Tema */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -129,5 +138,5 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
