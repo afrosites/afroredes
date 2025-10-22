@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle, Edit, Image as ImageIcon } from 'lucide-react';
+import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle, Edit, Image as ImageIcon, MessageSquareText } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
@@ -315,18 +315,30 @@ const GuildProfile: React.FC = () => {
           </div>
           <Separator />
 
-          {/* Join/Leave Buttons */}
-          <div className="flex justify-center">
+          {/* Join/Leave/Chat Buttons */}
+          <div className="flex justify-center gap-4">
             {user && (
               isMember ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="destructive" onClick={handleLeaveGuild} disabled={isJoining}>
-                      {isJoining ? 'Saindo...' : 'Sair da Guilda'}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Sair desta guilda</TooltipContent>
-                </Tooltip>
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="destructive" onClick={handleLeaveGuild} disabled={isJoining}>
+                        {isJoining ? 'Saindo...' : 'Sair da Guilda'}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Sair desta guilda</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to={`/game/guilds/${guild.id}/chat`}>
+                        <Button>
+                          <MessageSquareText className="mr-2 h-4 w-4" /> Chat da Guilda
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>Acessar o chat exclusivo da guilda</TooltipContent>
+                  </Tooltip>
+                </>
               ) : (
                 <Tooltip>
                   <TooltipTrigger asChild>
