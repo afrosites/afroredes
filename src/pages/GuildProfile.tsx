@@ -10,9 +10,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Crown, ArrowLeft } from 'lucide-react';
+import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle } from 'lucide-react'; // Adicionado Circle para status online
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from '@/components/ui/badge';
 
 interface GuildData {
   id: string;
@@ -20,6 +21,7 @@ interface GuildData {
   description: string | null;
   created_by: string;
   created_at: string;
+  level: number; // Adicionado level
 }
 
 interface GuildMember {
@@ -30,7 +32,15 @@ interface GuildMember {
   level: number | null;
   class: string | null;
   status: string | null;
+  guild_role: string | null; // Adicionado guild_role
 }
+
+// Habilidades simuladas da guilda (para demonstração)
+const dummyGuildSkills = [
+  { id: 'gs1', name: 'Bônus de XP da Guilda', description: 'Todos os membros ganham 10% mais XP.', icon: Zap },
+  { id: 'gs2', name: 'Defesa Coletiva', description: 'Aumenta a defesa de todos os membros em 5%.', icon: Shield },
+  { id: 'gs3', name: 'Cura da Guilda', description: 'Membros regeneram vida mais rapidamente.', icon: Heart },
+];
 
 const GuildProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +50,7 @@ const GuildProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const [userGuildRole, setUserGuildRole] = useState<string | null>(null); // Cargo do usuário logado na guilda
 
   useEffect(() => {
     if (id) {
@@ -67,7 +78,7 @@ const GuildProfile: React.FC = () => {
     // Fetch guild members
     const { data: membersData, error: membersError } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, level, class, status')
+      .select('id, first_name, last_name, avatar_url, level, class, status, guild_role') // Selecionar guild_role
       .eq('guild_id', guildId)
       .order('level', { ascending: false });
 
@@ -77,7 +88,9 @@ const GuildProfile: React.FC = () => {
     } else if (membersData) {
       setMembers(membersData);
       if (user) {
-        setIsMember(membersData.some(member => member.id === user.id));
+        const currentUserMember = membersData.find(member => member.id === user.id);
+        setIsMember(!!currentUserMember);
+        setUserGuildRole(currentUserMember?.guild_role || null);
       }
     }
     setLoading(false);
@@ -92,7 +105,7 @@ const GuildProfile: React.FC = () => {
     setIsJoining(true);
     const { error } = await supabase
       .from('profiles')
-      .update({ guild_id: guild.id })
+      .update({ guild_id: guild.id, guild_role: 'Membro' }) // Define o cargo como 'Membro' ao entrar
       .eq('id', user.id);
 
     if (error) {
@@ -101,6 +114,7 @@ const GuildProfile: React.FC = () => {
     } else {
       toast.success(`Você entrou na guilda "${guild.name}"!`);
       setIsMember(true);
+      setUserGuildRole('Membro');
       if (id) fetchGuildDetails(id); // Refresh data
     }
     setIsJoining(false);
@@ -115,7 +129,7 @@ const GuildProfile: React.FC = () => {
     setIsJoining(true); // Reusing for loading state
     const { error } = await supabase
       .from('profiles')
-      .update({ guild_id: null })
+      .update({ guild_id: null, guild_role: null }) // Remove o cargo ao sair
       .eq('id', user.id);
 
     if (error) {
@@ -124,6 +138,7 @@ const GuildProfile: React.FC = () => {
     } else {
       toast.success(`Você saiu da guilda "${guild.name}".`);
       setIsMember(false);
+      setUserGuildRole(null);
       if (id) fetchGuildDetails(id); // Refresh data
     }
     setIsJoining(false);
@@ -153,6 +168,8 @@ const GuildProfile: React.FC = () => {
     return `${member.first_name || ''} ${member.last_name || ''}`.trim() || 'Aventureiro';
   };
 
+  const onlineMembers = members.filter(member => member.status === 'Online');
+
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-4xl mb-6 flex justify-between items-center">
@@ -175,10 +192,37 @@ const GuildProfile: React.FC = () => {
           <Crown className="h-16 w-16 mb-4 text-yellow-500" />
           <CardTitle className="text-4xl font-extrabold">{guild.name}</CardTitle>
           <CardDescription className="text-lg mt-2">{guild.description || 'Nenhuma descrição fornecida.'}</CardDescription>
-          <p className="text-sm text-muted-foreground mt-2">Membros: {members.length}</p>
+          <div className="flex items-center gap-4 mt-2">
+            <p className="text-sm text-muted-foreground">Membros: {members.length}</p>
+            <p className="text-sm text-muted-foreground">Nível: {guild.level}</p>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <Separator />
+
+          {/* Guild Skills Section */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <Zap className="h-5 w-5 text-blue-500" /> Habilidades da Guilda
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {dummyGuildSkills.map(skill => {
+                const Icon = skill.icon;
+                return (
+                  <Card key={skill.id} className="p-3 flex items-center gap-3">
+                    <Icon className="h-6 w-6 text-blue-400" />
+                    <div>
+                      <p className="font-medium">{skill.name}</p>
+                      <p className="text-sm text-muted-foreground">{skill.description}</p>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+          <Separator />
+
+          {/* Join/Leave Buttons */}
           <div className="flex justify-center">
             {user && (
               isMember ? (
@@ -213,11 +257,14 @@ const GuildProfile: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="w-full max-w-4xl">
+      <Card className="w-full max-w-4xl mb-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" /> Membros da Guilda ({members.length})
           </CardTitle>
+          <CardDescription>
+            {onlineMembers.length > 0 ? `${onlineMembers.length} online` : 'Nenhum membro online.'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {members.length === 0 ? (
@@ -228,29 +275,50 @@ const GuildProfile: React.FC = () => {
                 <TableRow>
                   <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>Nome</TableHead>
-                  <TableHead>Classe</TableHead>
+                  <TableHead>Cargo</TableHead> {/* Nova coluna para cargo */}
                   <TableHead>Nível</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {members.map((member, index) => (
-                  <TableRow key={member.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={member.avatar_url || 'https://github.com/shadcn.png'} alt={getMemberDisplayName(member)} />
-                          <AvatarFallback>{getMemberDisplayName(member).charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span>{getMemberDisplayName(member)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{member.class || 'Aventureiro'}</TableCell>
-                    <TableCell>{member.level || 1}</TableCell>
-                    <TableCell>{member.status || 'Offline'}</TableCell>
-                  </TableRow>
-                ))}
+                {members.map((member, index) => {
+                  const isLeader = member.id === guild.created_by;
+                  const isOnline = member.status === 'Online';
+                  return (
+                    <TableRow key={member.id} className={isLeader ? 'bg-yellow-100/20 dark:bg-yellow-900/20' : ''}>
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.avatar_url || 'https://github.com/shadcn.png'} alt={getMemberDisplayName(member)} />
+                            <AvatarFallback>{getMemberDisplayName(member).charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span>{getMemberDisplayName(member)}</span>
+                          {isLeader && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Crown className="h-4 w-4 text-yellow-500" />
+                              </TooltipTrigger>
+                              <TooltipContent>Líder da Guilda</TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={isLeader ? 'bg-yellow-500 text-white' : ''}>
+                          {member.guild_role || 'Membro'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{member.level || 1}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Circle className={`h-2 w-2 ${isOnline ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" />
+                          <span>{isOnline ? 'Online' : 'Offline'}</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

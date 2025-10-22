@@ -13,8 +13,8 @@ import { useSession } from '@/components/SessionContextProvider';
 import { PlusCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
-import { Link } from 'react-router-dom'; // Importar Link
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Link } from 'react-router-dom';
 
 interface Guild {
   id: string;
@@ -22,6 +22,7 @@ interface Guild {
   description: string | null;
   created_by: string;
   created_at: string;
+  level: number; // Adicionado level
   member_count?: number;
 }
 
@@ -42,7 +43,7 @@ const Guilds: React.FC = () => {
     setLoadingGuilds(true);
     const { data: guildsData, error: guildsError } = await supabase
       .from('guilds')
-      .select('id, name, description, created_by, created_at');
+      .select('id, name, description, created_by, created_at, level'); // Selecionar level
 
     if (guildsError) {
       toast.error("Erro ao carregar guildas: " + guildsError.message);
@@ -88,6 +89,7 @@ const Guilds: React.FC = () => {
         name: newGuildName.trim(),
         description: newGuildDescription.trim() || null,
         created_by: user.id,
+        level: 1, // Nova guilda começa no nível 1
       })
       .select()
       .single();
@@ -101,8 +103,8 @@ const Guilds: React.FC = () => {
       }
     } else if (data) {
       toast.success(`Guilda "${data.name}" criada com sucesso!`);
-      // Optionally, update the user's profile to join this guild immediately
-      await supabase.from('profiles').update({ guild_id: data.id }).eq('id', user.id);
+      // Atualiza o perfil do criador para entrar na guilda e definir como Líder
+      await supabase.from('profiles').update({ guild_id: data.id, guild_role: 'Líder' }).eq('id', user.id);
       fetchGuilds();
       setIsCreatingGuild(false);
       setNewGuildName('');
@@ -148,11 +150,11 @@ const Guilds: React.FC = () => {
                     <div>
                       <h3 className="text-lg font-semibold">{guild.name}</h3>
                       <p className="text-sm text-muted-foreground">{guild.description || 'Nenhuma descrição.'}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Membros: {guild.member_count || 0} | Nível: {guild.level}</p>
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Link to={`/game/guilds/${guild.id}`}> {/* Link para a página de perfil da guilda */}
+                        <Link to={`/game/guilds/${guild.id}`}>
                           <Button variant="outline" disabled={!user}>
                             Ver Detalhes
                           </Button>

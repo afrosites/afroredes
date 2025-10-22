@@ -24,7 +24,8 @@ interface ProfileData {
   level: number | null;
   guilds: { name: string } | null;
   status: string | null;
-  gender: string | null; // Adicionado campo de gênero
+  gender: string | null;
+  guild_role: string | null; // Adicionado campo de cargo na guilda
 }
 
 const Profile: React.FC = () => {
@@ -39,7 +40,8 @@ const Profile: React.FC = () => {
   const [classInput, setClassInput] = useState('');
   const [levelInput, setLevelInput] = useState<number | ''>('');
   const [statusInput, setStatusInput] = useState('Online');
-  const [genderInput, setGenderInput] = useState(''); // Estado para o gênero
+  const [genderInput, setGenderInput] = useState('');
+  const [guildRoleInput, setGuildRoleInput] = useState(''); // Estado para o cargo na guilda
 
   useEffect(() => {
     if (user) {
@@ -55,7 +57,7 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status, gender') // Incluir gênero
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status, gender, guild_role') // Incluir gênero e guild_role
       .eq('id', user.id)
       .single();
 
@@ -71,7 +73,8 @@ const Profile: React.FC = () => {
       setClassInput(data.class || '');
       setLevelInput(data.level || 1);
       setStatusInput(data.status || 'Online');
-      setGenderInput(data.gender || ''); // Definir gênero inicial
+      setGenderInput(data.gender || '');
+      setGuildRoleInput(data.guild_role || 'Membro'); // Definir cargo inicial
     }
     setLoadingProfile(false);
   };
@@ -90,7 +93,8 @@ const Profile: React.FC = () => {
         class: classInput,
         level: typeof levelInput === 'number' ? levelInput : 1,
         status: statusInput,
-        gender: genderInput, // Salvar gênero
+        gender: genderInput,
+        guild_role: guildRoleInput, // Salvar cargo na guilda
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -207,7 +211,6 @@ const Profile: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Campo de seleção de Gênero */}
               <div>
                 <Label htmlFor="gender">Gênero</Label>
                 <Select value={genderInput} onValueChange={setGenderInput}>
@@ -221,6 +224,15 @@ const Profile: React.FC = () => {
                     <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              {/* Campo de seleção de Cargo na Guilda (apenas para visualização, não editável aqui) */}
+              <div>
+                <Label htmlFor="guildRole">Cargo na Guilda</Label>
+                <Input
+                  id="guildRole"
+                  value={guildRoleInput || 'Nenhum'}
+                  disabled // Não editável diretamente aqui
+                />
               </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <Tooltip>
@@ -267,6 +279,10 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
                   <p className="text-lg font-semibold">{profile?.guilds?.name || 'Nenhuma'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Cargo na Guilda:</p>
+                  <p className="text-lg font-semibold">{profile?.guild_role || 'Nenhum'}</p>
                 </div>
               </div>
               <div className="flex justify-end pt-4">
