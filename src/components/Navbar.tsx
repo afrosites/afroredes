@@ -78,21 +78,21 @@ export const Navbar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={handleShowNotification}>
-                <Bell className="h-6 w-6" /> {/* Aumentado o tamanho */}
+                <Bell className="h-6 w-6" />
                 <span className="sr-only">Notificações</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>Ver Notificações</TooltipContent>
           </Tooltip>
 
-          {/* Dropdown de Alternância de Tema (agora primeiro) */}
+          {/* Dropdown de Alternância de Tema */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" /> {/* Aumentado o tamanho */}
-                    <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" /> {/* Aumentado o tamanho */}
+                    <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">Alternar tema</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -112,13 +112,13 @@ export const Navbar: React.FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Dropdown de Perfil (agora segundo) */}
+          {/* Dropdown de Perfil */}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <User className="h-6 w-6" /> {/* Aumentado o tamanho */}
+                    <User className="h-6 w-6 text-primary" /> {/* Adicionado text-primary para contraste */}
                     <span className="sr-only">Menu do usuário</span>
                   </Button>
                 </DropdownMenuTrigger>
