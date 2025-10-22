@@ -10,10 +10,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle } from 'lucide-react'; // Adicionado Circle para status online
+import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle, Edit, Image as ImageIcon } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import AvatarGallery from '@/components/AvatarGallery';
 
 interface GuildData {
   id: string;
@@ -21,7 +26,8 @@ interface GuildData {
   description: string | null;
   created_by: string;
   created_at: string;
-  level: number; // Adicionado level
+  level: number;
+  avatar_url: string | null; // Adicionado avatar_url
 }
 
 interface GuildMember {
@@ -32,10 +38,9 @@ interface GuildMember {
   level: number | null;
   class: string | null;
   status: string | null;
-  guild_role: string | null; // Adicionado guild_role
+  guild_role: string | null;
 }
 
-// Habilidades simuladas da guilda (para demonstração)
 const dummyGuildSkills = [
   { id: 'gs1', name: 'Bônus de XP da Guilda', description: 'Todos os membros ganham 10% mais XP.', icon: Zap },
   { id: 'gs2', name: 'Defesa Coletiva', description: 'Aumenta a defesa de todos os membros em 5%.', icon: Shield },
@@ -50,7 +55,15 @@ const GuildProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
   const [isMember, setIsMember] = useState(false);
-  const [userGuildRole, setUserGuildRole] = useState<string | null>(null); // Cargo do usuário logado na guilda
+  const [userGuildRole, setUserGuildRole] = useState<string | null>(null);
+
+  // State for editing guild
+  const [isEditingGuild, setIsEditingGuild] = useState(false);
+  const [editGuildName, setEditGuildName] = useState('');
+  const [editGuildDescription, setEditGuildDescription] = useState('');
+  const [editGuildAvatarUrl, setEditGuildAvatarUrl] = useState<string | null>(null);
+  const [isAvatarGalleryOpen, setIsAvatarGalleryOpen] = useState(false);
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -60,7 +73,6 @@ const GuildProfile: React.FC = () => {
 
   const fetchGuildDetails = async (guildId: string) => {
     setLoading(true);
-    // Fetch guild data
     const { data: guildData, error: guildError } = await supabase
       .from('guilds')
       .select('*')
@@ -74,11 +86,13 @@ const GuildProfile: React.FC = () => {
       return;
     }
     setGuild(guildData);
+    setEditGuildName(guildData.name);
+    setEditGuildDescription(guildData.description || '');
+    setEditGuildAvatarUrl(guildData.avatar_url);
 
-    // Fetch guild members
     const { data: membersData, error: membersError } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, level, class, status, guild_role') // Selecionar guild_role
+      .select('id, first_name, last_name, avatar_url, level, class, status, guild_role')
       .eq('guild_id', guildId)
       .order('level', { ascending: false });
 
@@ -105,7 +119,7 @@ const GuildProfile: React.FC = () => {
     setIsJoining(true);
     const { error } = await supabase
       .from('profiles')
-      .update({ guild_id: guild.id, guild_role: 'Membro' }) // Define o cargo como 'Membro' ao entrar
+      .update({ guild_id: guild.id, guild_role: 'Membro' })
       .eq('id', user.id);
 
     if (error) {
@@ -115,7 +129,7 @@ const GuildProfile: React.FC = () => {
       toast.success(`Você entrou na guilda "${guild.name}"!`);
       setIsMember(true);
       setUserGuildRole('Membro');
-      if (id) fetchGuildDetails(id); // Refresh data
+      if (id) fetchGuildDetails(id);
     }
     setIsJoining(false);
   };
@@ -126,10 +140,10 @@ const GuildProfile: React.FC = () => {
       return;
     }
 
-    setIsJoining(true); // Reusing for loading state
+    setIsJoining(true);
     const { error } = await supabase
       .from('profiles')
-      .update({ guild_id: null, guild_role: null }) // Remove o cargo ao sair
+      .update({ guild_id: null, guild_role: null })
       .eq('id', user.id);
 
     if (error) {
@@ -139,9 +153,73 @@ const GuildProfile: React.FC = () => {
       toast.success(`Você saiu da guilda "${guild.name}".`);
       setIsMember(false);
       setUserGuildRole(null);
-      if (id) fetchGuildDetails(id); // Refresh data
+      if (id) fetchGuildDetails(id);
     }
     setIsJoining(false);
+  };
+
+  const handleUpdateGuild = async () => {
+    if (!user || !guild) return;
+
+    setIsSubmittingEdit(true);
+    const { error } = await supabase
+      .from('guilds')
+      .update({
+        name: editGuildName.trim(),
+        description: editGuildDescription.trim() || null,
+        avatar_url: editGuildAvatarUrl,
+      })
+      .eq('id', guild.id)
+      .eq('created_by', user.id); // Only the creator can update
+
+    if (error) {
+      toast.error("Erro ao atualizar guilda: " + error.message);
+      console.error("Error updating guild:", error);
+    } else {
+      toast.success("Guilda atualizada com sucesso!");
+      if (id) fetchGuildDetails(id);
+      setIsEditingGuild(false);
+    }
+    setIsSubmittingEdit(false);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user || !guild || !event.target.files || event.target.files.length === 0) {
+      toast.error("Nenhum arquivo selecionado ou você não tem permissão.");
+      return;
+    }
+
+    const file = event.target.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${guild.id}-${Math.random()}.${fileExt}`; // Unique filename for this guild
+    const filePath = `${fileName}`;
+
+    setIsSubmittingEdit(true);
+    const { data, error } = await supabase.storage
+      .from('guild_avatars')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (error) {
+      toast.error("Erro ao fazer upload do avatar: " + error.message);
+      console.error("Error uploading avatar:", error);
+      setIsSubmittingEdit(false);
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('guild_avatars')
+      .getPublicUrl(filePath);
+
+    if (publicUrlData?.publicUrl) {
+      setEditGuildAvatarUrl(publicUrlData.publicUrl);
+      toast.success("Avatar enviado com sucesso! Clique em 'Salvar' para aplicar.");
+    } else {
+      toast.error("Erro ao obter URL pública do avatar.");
+    }
+    setIsSubmittingEdit(false);
   };
 
   if (loading || isSessionLoading) {
@@ -169,6 +247,7 @@ const GuildProfile: React.FC = () => {
   };
 
   const onlineMembers = members.filter(member => member.status === 'Online');
+  const isGuildLeader = user && guild.created_by === user.id;
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
@@ -184,12 +263,26 @@ const GuildProfile: React.FC = () => {
           </Tooltip>
         </Link>
         <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Perfil da Guilda</h2>
-        <div></div> {/* Placeholder for alignment */}
+        {isGuildLeader && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon" onClick={() => setIsEditingGuild(true)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Editar Guilda</TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       <Card className="w-full max-w-4xl mb-8">
         <CardHeader className="flex flex-col items-center text-center">
-          <Crown className="h-16 w-16 mb-4 text-yellow-500" />
+          <Avatar className="h-24 w-24 mb-4">
+            <AvatarImage src={guild.avatar_url || 'https://github.com/shadcn.png'} alt={guild.name} />
+            <AvatarFallback>
+              <ImageIcon className="h-12 w-12 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
           <CardTitle className="text-4xl font-extrabold">{guild.name}</CardTitle>
           <CardDescription className="text-lg mt-2">{guild.description || 'Nenhuma descrição fornecida.'}</CardDescription>
           <div className="flex items-center gap-4 mt-2">
@@ -275,7 +368,7 @@ const GuildProfile: React.FC = () => {
                 <TableRow>
                   <TableHead className="w-[50px]">#</TableHead>
                   <TableHead>Nome</TableHead>
-                  <TableHead>Cargo</TableHead> {/* Nova coluna para cargo */}
+                  <TableHead>Cargo</TableHead>
                   <TableHead>Nível</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -324,6 +417,96 @@ const GuildProfile: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialog for editing guild */}
+      <Dialog open={isEditingGuild} onOpenChange={setIsEditingGuild}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Guilda</DialogTitle>
+            <DialogDescription>
+              Atualize os detalhes da sua guilda.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editGuildName" className="text-right">
+                Nome
+              </Label>
+              <Input
+                id="editGuildName"
+                value={editGuildName}
+                onChange={(e) => setEditGuildName(e.target.value)}
+                className="col-span-3"
+                disabled={isSubmittingEdit}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editGuildDescription" className="text-right">
+                Descrição
+              </Label>
+              <Textarea
+                id="editGuildDescription"
+                value={editGuildDescription}
+                onChange={(e) => setEditGuildDescription(e.target.value)}
+                className="col-span-3"
+                placeholder="Uma breve descrição da sua guilda..."
+                disabled={isSubmittingEdit}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Avatar</Label>
+              <div className="col-span-3 flex flex-col gap-2">
+                <Avatar className="h-16 w-16 self-center">
+                  <AvatarImage src={editGuildAvatarUrl || 'https://github.com/shadcn.png'} alt="Guild Avatar" />
+                  <AvatarFallback>
+                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                  </AvatarFallback>
+                </Avatar>
+                <Button variant="outline" onClick={() => setIsAvatarGalleryOpen(true)} disabled={isSubmittingEdit}>
+                  Selecionar da Galeria
+                </Button>
+                <Label htmlFor="avatarUpload" className="sr-only">Upload de Avatar</Label>
+                <Input
+                  id="avatarUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="col-span-3"
+                  disabled={isSubmittingEdit}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={() => setIsEditingGuild(false)} disabled={isSubmittingEdit}>
+                  Cancelar
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Descartar alterações</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={handleUpdateGuild} disabled={isSubmittingEdit}>
+                  {isSubmittingEdit ? 'Salvando...' : 'Salvar Alterações'}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Confirmar e salvar as alterações da guilda</TooltipContent>
+            </Tooltip>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AvatarGallery
+        isOpen={isAvatarGalleryOpen}
+        onClose={() => setIsAvatarGalleryOpen(false)}
+        onSelectAvatar={(url) => {
+          setEditGuildAvatarUrl(url);
+          setIsAvatarGalleryOpen(false);
+        }}
+        selectedAvatarUrl={editGuildAvatarUrl}
+      />
     </div>
   );
 };
