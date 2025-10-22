@@ -3,8 +3,8 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User } from "lucide-react"
-import { SettingsMenu } from "./SettingsMenu" // Import the new SettingsMenu component
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard } from "lucide-react" // Importar LayoutDashboard
+import { SettingsMenu } from "./SettingsMenu"
 
 interface NavLinkProps {
   to: string;
@@ -40,6 +40,7 @@ export const Sidebar: React.FC = () => {
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
+          <NavLink to="/game/dashboard" icon={LayoutDashboard} label="Dashboard" /> {/* Novo link para o Dashboard */}
           <NavLink to="/game" icon={User} label="Status" />
           <NavLink to="/game/inventory" icon={Briefcase} label="Inventário" />
           <NavLink to="/game/skills" icon={Sparkles} label="Habilidades" />
@@ -48,10 +49,9 @@ export const Sidebar: React.FC = () => {
           <NavLink to="/game/ranking" icon={Award} label="Ranking" />
         </nav>
       </div>
-      {/* Settings and Legal links at the bottom */}
       <div className="mt-auto border-t py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
-          <SettingsMenu /> {/* Usando o novo componente SettingsMenu */}
+          <SettingsMenu />
         </nav>
       </div>
     </div>

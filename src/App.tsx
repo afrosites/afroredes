@@ -14,8 +14,7 @@ import Ranking from "./pages/Ranking";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-// Removido import PrivacyPolicy from "./pages/PrivacyPolicy";
-// Removido import LGPD from "./pages/LGPD";
+import Dashboard from "./pages/Dashboard"; // Importar o novo Dashboard
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -34,6 +33,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
+              <Route path="/game/dashboard" element={<GameLayout><Dashboard /></GameLayout>} /> {/* Nova rota para o Dashboard */}
               <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
               <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
               <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
@@ -41,7 +41,6 @@ const App = () => (
               <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
               <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
               <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
-              {/* Rotas de Política de Privacidade e LGPD removidas */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
