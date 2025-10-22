@@ -10,14 +10,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea'; // Import Textarea for bio
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 interface ProfileData {
   first_name: string | null;
   last_name: string | null;
   avatar_url: string | null;
-  bio: string | null; // Add bio field
+  bio: string | null;
+  class: string | null; // Add class field
+  level: number | null; // Add level field
+  guilds: { name: string } | null; // Add guild relation
 }
 
 const Profile: React.FC = () => {
@@ -28,20 +31,15 @@ const Profile: React.FC = () => {
   const [firstNameInput, setFirstNameInput] = useState('');
   const [lastNameInput, setLastNameInput] = useState('');
   const [avatarUrlInput, setAvatarUrlInput] = useState('');
-  const [bioInput, setBioInput] = useState(''); // State for bio input
-
-  // Dummy data for game-specific stats not stored in Supabase profiles table
-  const gameStats = {
-    level: 15,
-    class: "Guerreiro Mago",
-    guild: "Ordem dos Dragões",
-  };
+  const [bioInput, setBioInput] = useState('');
+  const [classInput, setClassInput] = useState(''); // State for class input
+  const [levelInput, setLevelInput] = useState<number | ''>(''); // State for level input
 
   useEffect(() => {
     if (user) {
       fetchProfile();
     } else if (!isSessionLoading) {
-      setLoadingProfile(false); // No user, no profile to load
+      setLoadingProfile(false);
     }
   }, [user, isSessionLoading]);
 
@@ -51,11 +49,11 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio') // Select bio
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name)') // Select class, level, and guild name
       .eq('id', user.id)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+    if (error && error.code !== 'PGRST116') {
       toast.error("Erro ao carregar perfil: " + error.message);
       console.error("Error fetching profile:", error);
     } else if (data) {
@@ -63,7 +61,9 @@ const Profile: React.FC = () => {
       setFirstNameInput(data.first_name || '');
       setLastNameInput(data.last_name || '');
       setAvatarUrlInput(data.avatar_url || '');
-      setBioInput(data.bio || ''); // Set bio input
+      setBioInput(data.bio || '');
+      setClassInput(data.class || ''); // Set class input
+      setLevelInput(data.level || 1); // Set level input
     }
     setLoadingProfile(false);
   };
@@ -78,7 +78,9 @@ const Profile: React.FC = () => {
         first_name: firstNameInput,
         last_name: lastNameInput,
         avatar_url: avatarUrlInput,
-        bio: bioInput, // Update bio
+        bio: bioInput,
+        class: classInput, // Update class
+        level: typeof levelInput === 'number' ? levelInput : 1, // Update level
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -88,7 +90,7 @@ const Profile: React.FC = () => {
       console.error("Error updating profile:", error);
     } else {
       toast.success("Perfil atualizado com sucesso!");
-      await fetchProfile(); // Re-fetch to update state
+      await fetchProfile();
       setIsEditing(false);
     }
     setLoadingProfile(false);
@@ -112,7 +114,7 @@ const Profile: React.FC = () => {
 
   const displayName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || user.email?.split('@')[0] || 'Aventureiro';
   const displayEmail = user.email;
-  const displayAvatar = profile?.avatar_url || user.user_metadata.avatar_url || 'https://github.com/shadcn.png'; // Fallback to shadcn default
+  const displayAvatar = profile?.avatar_url || user.user_metadata.avatar_url || 'https://github.com/shadcn.png';
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
@@ -164,6 +166,24 @@ const Profile: React.FC = () => {
                   placeholder="Conte-nos um pouco sobre você..."
                 />
               </div>
+              <div>
+                <Label htmlFor="class">Classe</Label>
+                <Input
+                  id="class"
+                  value={classInput}
+                  onChange={(e) => setClassInput(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="level">Nível</Label>
+                <Input
+                  id="level"
+                  type="number"
+                  value={levelInput}
+                  onChange={(e) => setLevelInput(parseInt(e.target.value) || '')}
+                  min="1"
+                />
+              </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancelar
@@ -182,15 +202,15 @@ const Profile: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Nível:</p>
-                  <p className="text-lg font-semibold">{gameStats.level}</p>
+                  <p className="text-lg font-semibold">{profile?.level || 1}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Classe:</p>
-                  <p className="text-lg font-semibold">{gameStats.class}</p>
+                  <p className="text-lg font-semibold">{profile?.class || 'Aventureiro'}</p>
                 </div>
                 <div className="md:col-span-2">
                   <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
-                  <p className="text-lg font-semibold">{gameStats.guild}</p>
+                  <p className="text-lg font-semibold">{profile?.guilds?.name || 'Nenhuma'}</p>
                 </div>
               </div>
               <div className="flex justify-end pt-4">
