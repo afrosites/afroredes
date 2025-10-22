@@ -12,7 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Importar componentes de Tooltip
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Importar Select
 
 interface ProfileData {
   first_name: string | null;
@@ -22,6 +23,7 @@ interface ProfileData {
   class: string | null;
   level: number | null;
   guilds: { name: string } | null;
+  status: string | null; // Adicionar status
 }
 
 const Profile: React.FC = () => {
@@ -35,6 +37,7 @@ const Profile: React.FC = () => {
   const [bioInput, setBioInput] = useState('');
   const [classInput, setClassInput] = useState('');
   const [levelInput, setLevelInput] = useState<number | ''>('');
+  const [statusInput, setStatusInput] = useState('Online'); // Estado para o status
 
   useEffect(() => {
     if (user) {
@@ -50,7 +53,7 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name)')
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status') // Incluir status
       .eq('id', user.id)
       .single();
 
@@ -65,6 +68,7 @@ const Profile: React.FC = () => {
       setBioInput(data.bio || '');
       setClassInput(data.class || '');
       setLevelInput(data.level || 1);
+      setStatusInput(data.status || 'Online'); // Definir status inicial
     }
     setLoadingProfile(false);
   };
@@ -82,6 +86,7 @@ const Profile: React.FC = () => {
         bio: bioInput,
         class: classInput,
         level: typeof levelInput === 'number' ? levelInput : 1,
+        status: statusInput, // Salvar status
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -185,6 +190,20 @@ const Profile: React.FC = () => {
                   min="1"
                 />
               </div>
+              {/* Campo de seleção de Status */}
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select value={statusInput} onValueChange={setStatusInput}>
+                  <SelectTrigger id="status" className="w-full">
+                    <SelectValue placeholder="Selecionar Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Online">Online</SelectItem>
+                    <SelectItem value="Ausente">Ausente</SelectItem>
+                    <SelectItem value="Ocupado">Ocupado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -219,7 +238,11 @@ const Profile: React.FC = () => {
                   <p className="text-sm font-medium text-muted-foreground">Classe:</p>
                   <p className="text-lg font-semibold">{profile?.class || 'Aventureiro'}</p>
                 </div>
-                <div className="md:col-span-2">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Status:</p>
+                  <p className="text-lg font-semibold">{profile?.status || 'Online'}</p>
+                </div>
+                <div>
                   <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
                   <p className="text-lg font-semibold">{profile?.guilds?.name || 'Nenhuma'}</p>
                 </div>
