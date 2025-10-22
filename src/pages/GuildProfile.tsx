@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle, Edit, Image as ImageIcon, MessageSquareText } from 'lucide-react';
+import { Users, Crown, ArrowLeft, Zap, Shield, Heart, Circle, Edit, Image as ImageIcon, MessageSquareText, Star } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AvatarGallery from '@/components/AvatarGallery';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Importar Tabs
 
 interface GuildData {
   id: string;
@@ -27,7 +28,7 @@ interface GuildData {
   created_by: string;
   created_at: string;
   level: number;
-  avatar_url: string | null; // Adicionado avatar_url
+  avatar_url: string | null;
 }
 
 interface GuildMember {
@@ -275,44 +276,33 @@ const GuildProfile: React.FC = () => {
         )}
       </div>
 
+      {/* Guild Header Section */}
       <Card className="w-full max-w-4xl mb-8">
-        <CardHeader className="flex flex-col items-center text-center">
-          <Avatar className="h-24 w-24 mb-4">
+        <CardHeader className="flex flex-col items-center text-center p-6">
+          <Avatar className="h-32 w-32 mb-4 border-4 border-primary shadow-lg">
             <AvatarImage src={guild.avatar_url || 'https://github.com/shadcn.png'} alt={guild.name} />
-            <AvatarFallback>
-              <ImageIcon className="h-12 w-12 text-muted-foreground" />
+            <AvatarFallback className="text-5xl font-bold">
+              <ImageIcon className="h-16 w-16 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
-          <CardTitle className="text-4xl font-extrabold">{guild.name}</CardTitle>
-          <CardDescription className="text-lg mt-2">{guild.description || 'Nenhuma descrição fornecida.'}</CardDescription>
-          <div className="flex items-center gap-4 mt-2">
-            <p className="text-sm text-muted-foreground">Membros: {members.length}</p>
-            <p className="text-sm text-muted-foreground">Nível: {guild.level}</p>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Separator />
-
-          {/* Guild Skills Section */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold flex items-center gap-2">
-              <Zap className="h-5 w-5 text-blue-500" /> Habilidades da Guilda
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dummyGuildSkills.map(skill => {
-                const Icon = skill.icon;
-                return (
-                  <Card key={skill.id} className="p-3 flex items-center gap-3">
-                    <Icon className="h-6 w-6 text-blue-400" />
-                    <div>
-                      <p className="font-medium">{skill.name}</p>
-                      <p className="text-sm text-muted-foreground">{skill.description}</p>
-                    </div>
-                  </Card>
-                );
-              })}
+          <CardTitle className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+            {guild.name}
+          </CardTitle>
+          <CardDescription className="text-lg text-muted-foreground mt-2 max-w-prose">
+            {guild.description || 'Nenhuma descrição fornecida para esta guilda.'}
+          </CardDescription>
+          <div className="flex items-center gap-6 mt-4 text-lg">
+            <div className="flex items-center gap-2 text-primary-foreground bg-primary px-3 py-1 rounded-full">
+              <Star className="h-5 w-5" />
+              <span>Nível {guild.level}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Users className="h-5 w-5" />
+              <span>{members.length} Membros</span>
             </div>
           </div>
+        </CardHeader>
+        <CardContent className="space-y-6 p-6 pt-0">
           <Separator />
 
           {/* Join/Leave/Chat Buttons */}
@@ -362,73 +352,110 @@ const GuildProfile: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="w-full max-w-4xl mb-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" /> Membros da Guilda ({members.length})
-          </CardTitle>
-          <CardDescription>
-            {onlineMembers.length > 0 ? `${onlineMembers.length} online` : 'Nenhum membro online.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {members.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">Esta guilda ainda não tem membros.</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">#</TableHead>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Cargo</TableHead>
-                  <TableHead>Nível</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {members.map((member, index) => {
-                  const isLeader = member.id === guild.created_by;
-                  const isOnline = member.status === 'Online';
-                  return (
-                    <TableRow key={member.id} className={isLeader ? 'bg-yellow-100/20 dark:bg-yellow-900/20' : ''}>
-                      <TableCell className="font-medium">{index + 1}</TableCell>
-                      <TableCell>
-                        <Link to={`/game/profile/${member.id}`} className="flex items-center gap-2 text-blue-500 hover:underline">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={member.avatar_url || 'https://github.com/shadcn.png'} alt={getMemberDisplayName(member)} />
-                            <AvatarFallback>{getMemberDisplayName(member).charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span>{getMemberDisplayName(member)}</span>
-                          {isLeader && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Crown className="h-4 w-4 text-yellow-500" />
-                              </TooltipTrigger>
-                              <TooltipContent>Líder da Guilda</TooltipContent>
-                            </Tooltip>
-                          )}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={isLeader ? 'bg-yellow-500 text-white' : ''}>
-                          {member.guild_role || 'Membro'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{member.level || 1}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Circle className={`h-2 w-2 ${isOnline ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" />
-                          <span>{isOnline ? 'Online' : 'Offline'}</span>
-                        </div>
-                      </TableCell>
+      {/* Tabs Section */}
+      <Tabs defaultValue="members" className="w-full max-w-4xl">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="members">Membros ({members.length})</TabsTrigger>
+          <TabsTrigger value="skills">Habilidades da Guilda</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="members">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" /> Membros da Guilda
+              </CardTitle>
+              <CardDescription>
+                {onlineMembers.length > 0 ? `${onlineMembers.length} online` : 'Nenhum membro online no momento.'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {members.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">Esta guilda ainda não tem membros.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[50px]">#</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Cargo</TableHead>
+                      <TableHead>Nível</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {members.map((member, index) => {
+                      const isLeader = member.id === guild.created_by;
+                      const isOnline = member.status === 'Online';
+                      return (
+                        <TableRow key={member.id} className={isLeader ? 'bg-yellow-100/20 dark:bg-yellow-900/20' : ''}>
+                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>
+                            <Link to={`/game/profile/${member.id}`} className="flex items-center gap-2 text-blue-500 hover:underline">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={member.avatar_url || 'https://github.com/shadcn.png'} alt={getMemberDisplayName(member)} />
+                                <AvatarFallback>{getMemberDisplayName(member).charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <span>{getMemberDisplayName(member)}</span>
+                              {isLeader && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Crown className="h-4 w-4 text-yellow-500" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>Líder da Guilda</TooltipContent>
+                                </Tooltip>
+                              )}
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={isLeader ? 'bg-yellow-500 text-white' : ''}>
+                              {member.guild_role || 'Membro'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{member.level || 1}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Circle className={`h-2 w-2 ${isOnline ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" />
+                              <span>{isOnline ? 'Online' : 'Offline'}</span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="skills">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-blue-500" /> Habilidades da Guilda
+              </CardTitle>
+              <CardDescription>Bônus e habilidades ativas para todos os membros da guilda.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {dummyGuildSkills.map(skill => {
+                  const Icon = skill.icon;
+                  return (
+                    <Card key={skill.id} className="p-4 flex items-center gap-4">
+                      <Icon className="h-8 w-8 text-blue-400" />
+                      <div>
+                        <p className="font-medium text-lg">{skill.name}</p>
+                        <p className="text-sm text-muted-foreground">{skill.description}</p>
+                      </div>
+                    </Card>
                   );
                 })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Dialog for editing guild */}
       <Dialog open={isEditingGuild} onOpenChange={setIsEditingGuild}>
