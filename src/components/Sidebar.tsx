@@ -3,9 +3,10 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store } from "lucide-react" // Importar Store icon
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft } from "lucide-react" // Importar ChevronLeft icon
 import { SettingsMenu } from "./SettingsMenu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button" // Importar Button
 
 interface NavLinkProps {
   to: string;
@@ -42,13 +43,34 @@ const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent
   return linkContent;
 };
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <div className="flex h-full max-h-screen flex-col gap-2 border-r bg-sidebar">
-      <div className="flex h-16 items-center border-b px-4 lg:px-6">
+      <div className="flex h-16 items-center border-b px-4 lg:px-6 justify-between"> {/* Adicionado justify-between */}
         <Link to="/game" className="flex items-center gap-2 font-semibold">
           <span className="text-lg text-sidebar-foreground">RPG Menu</span>
         </Link>
+        {sidebarOpen && ( // Mostrar o botão apenas se a sidebar estiver aberta
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(false)}
+                className="md:hidden lg:flex" // Ocultar em mobile, mostrar em desktop
+              >
+                <ChevronLeft className="h-5 w-5" />
+                <span className="sr-only">Ocultar menu</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Ocultar menu lateral</TooltipContent>
+          </Tooltip>
+        )}
       </div>
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
@@ -60,7 +82,7 @@ export const Sidebar: React.FC = () => {
           <NavLink to="/game/quests" icon={ScrollText} label="Missões" tooltipContent="Aceite e complete missões" />
           <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" />
           <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" />
-          <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" /> {/* Novo link para a Loja */}
+          <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" />
         </nav>
       </div>
       <div className="mt-auto border-t py-2">
