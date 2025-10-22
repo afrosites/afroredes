@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AvatarGallery from '@/components/AvatarGallery';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Importar Tabs
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface GuildData {
   id: string;
@@ -63,6 +63,7 @@ const GuildProfile: React.FC = () => {
   const [editGuildName, setEditGuildName] = useState('');
   const [editGuildDescription, setEditGuildDescription] = useState('');
   const [editGuildAvatarUrl, setEditGuildAvatarUrl] = useState<string | null>(null);
+  const [editGuildLevel, setEditGuildLevel] = useState<number | ''>(''); // New state for guild level
   const [isAvatarGalleryOpen, setIsAvatarGalleryOpen] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
 
@@ -90,6 +91,7 @@ const GuildProfile: React.FC = () => {
     setEditGuildName(guildData.name);
     setEditGuildDescription(guildData.description || '');
     setEditGuildAvatarUrl(guildData.avatar_url);
+    setEditGuildLevel(guildData.level); // Initialize guild level for editing
 
     const { data: membersData, error: membersError } = await supabase
       .from('profiles')
@@ -169,6 +171,7 @@ const GuildProfile: React.FC = () => {
         name: editGuildName.trim(),
         description: editGuildDescription.trim() || null,
         avatar_url: editGuildAvatarUrl,
+        level: typeof editGuildLevel === 'number' ? editGuildLevel : 1, // Update guild level
       })
       .eq('id', guild.id)
       .eq('created_by', user.id); // Only the creator can update
@@ -489,6 +492,20 @@ const GuildProfile: React.FC = () => {
                 onChange={(e) => setEditGuildDescription(e.target.value)}
                 className="col-span-3"
                 placeholder="Uma breve descrição da sua guilda..."
+                disabled={isSubmittingEdit}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editGuildLevel" className="text-right">
+                Nível
+              </Label>
+              <Input
+                id="editGuildLevel"
+                type="number"
+                value={editGuildLevel}
+                onChange={(e) => setEditGuildLevel(parseInt(e.target.value) || '')}
+                min="1"
+                className="col-span-3"
                 disabled={isSubmittingEdit}
               />
             </div>

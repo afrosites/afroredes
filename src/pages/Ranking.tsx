@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from 'react-router-dom'; // Importar Link
+import { Link } from 'react-router-dom';
 
 interface PlayerRanking {
   id: string;
@@ -15,14 +15,15 @@ interface PlayerRanking {
   last_name: string | null;
   level: number;
   class: string | null;
-  guilds: { id: string; name: string } | null; // Incluir ID da guilda
+  guilds: { id: string; name: string } | null;
 }
 
 interface GuildRanking {
   id: string;
   name: string;
   description: string | null;
-  member_count: number; // Will be calculated or fetched
+  member_count: number;
+  level: number; // Adicionado o nível da guilda
 }
 
 const Ranking: React.FC = () => {
@@ -40,9 +41,9 @@ const Ranking: React.FC = () => {
     setLoadingPlayers(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, level, class, guilds(id, name)') // Selecionar ID da guilda
+      .select('id, first_name, last_name, level, class, guilds(id, name)')
       .order('level', { ascending: false })
-      .limit(100); // Limit to top 100 players
+      .limit(100);
 
     if (error) {
       toast.error("Erro ao carregar ranking de jogadores: " + error.message);
@@ -55,10 +56,9 @@ const Ranking: React.FC = () => {
 
   const fetchGuildRanking = async () => {
     setLoadingGuilds(true);
-    // For guild ranking, we'll fetch guilds and then count members
     const { data: guildsData, error: guildsError } = await supabase
       .from('guilds')
-      .select('id, name, description');
+      .select('id, name, description, level'); // Selecionar o nível da guilda
 
     if (guildsError) {
       toast.error("Erro ao carregar ranking de guildas: " + guildsError.message);
@@ -82,8 +82,13 @@ const Ranking: React.FC = () => {
           return { ...guild, member_count: count || 0 };
         })
       );
-      // Sort guilds by member count (descending)
-      guildsWithMemberCount.sort((a, b) => b.member_count - a.member_count);
+      // Sort guilds by level first, then by member count (descending)
+      guildsWithMemberCount.sort((a, b) => {
+        if (b.level !== a.level) {
+          return b.level - a.level;
+        }
+        return b.member_count - a.member_count;
+      });
       setGuildRanking(guildsWithMemberCount as GuildRanking[]);
     }
     setLoadingGuilds(false);
@@ -171,6 +176,7 @@ const Ranking: React.FC = () => {
                     <TableRow>
                       <TableHead className="w-[50px]">Pos.</TableHead>
                       <TableHead>Nome da Guilda</TableHead>
+                      <TableHead>Nível</TableHead> {/* Nova coluna para o nível */}
                       <TableHead>Membros</TableHead>
                       <TableHead>Descrição</TableHead>
                     </TableRow>
@@ -184,6 +190,7 @@ const Ranking: React.FC = () => {
                             {guild.name}
                           </Link>
                         </TableCell>
+                        <TableCell>{guild.level}</TableCell> {/* Exibir o nível */}
                         <TableCell>{guild.member_count}</TableCell>
                         <TableCell>{guild.description || 'N/A'}</TableCell>
                       </TableRow>
