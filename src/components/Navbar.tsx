@@ -63,7 +63,7 @@ export const Navbar: React.FC = () => {
             </Sheet>
           )}
           <Link to="/game" className="text-2xl font-bold tracking-tight">
-            Jogo de RPG
+            Afro Redes
           </Link>
         </div>
 

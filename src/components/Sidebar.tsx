@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen })
     <div className="flex h-full max-h-screen flex-col gap-2 border-r bg-sidebar">
       <div className="flex h-16 items-center border-b px-4 lg:px-6 justify-between">
         <Link to="/game" className="flex items-center gap-2 font-semibold">
-          <span className="text-lg text-sidebar-foreground">RPG Menu</span>
+          <span className="text-lg text-sidebar-foreground">Afro Redes</span>
         </Link>
         {/* Botão de alternância para ocultar/mostrar a sidebar */}
         <Tooltip>
