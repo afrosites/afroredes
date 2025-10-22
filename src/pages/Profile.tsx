@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Importar Select
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ProfileData {
   first_name: string | null;
@@ -23,7 +23,8 @@ interface ProfileData {
   class: string | null;
   level: number | null;
   guilds: { name: string } | null;
-  status: string | null; // Adicionar status
+  status: string | null;
+  gender: string | null; // Adicionado campo de gênero
 }
 
 const Profile: React.FC = () => {
@@ -37,7 +38,8 @@ const Profile: React.FC = () => {
   const [bioInput, setBioInput] = useState('');
   const [classInput, setClassInput] = useState('');
   const [levelInput, setLevelInput] = useState<number | ''>('');
-  const [statusInput, setStatusInput] = useState('Online'); // Estado para o status
+  const [statusInput, setStatusInput] = useState('Online');
+  const [genderInput, setGenderInput] = useState(''); // Estado para o gênero
 
   useEffect(() => {
     if (user) {
@@ -53,7 +55,7 @@ const Profile: React.FC = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status') // Incluir status
+      .select('first_name, last_name, avatar_url, bio, class, level, guilds(name), status, gender') // Incluir gênero
       .eq('id', user.id)
       .single();
 
@@ -68,7 +70,8 @@ const Profile: React.FC = () => {
       setBioInput(data.bio || '');
       setClassInput(data.class || '');
       setLevelInput(data.level || 1);
-      setStatusInput(data.status || 'Online'); // Definir status inicial
+      setStatusInput(data.status || 'Online');
+      setGenderInput(data.gender || ''); // Definir gênero inicial
     }
     setLoadingProfile(false);
   };
@@ -86,7 +89,8 @@ const Profile: React.FC = () => {
         bio: bioInput,
         class: classInput,
         level: typeof levelInput === 'number' ? levelInput : 1,
-        status: statusInput, // Salvar status
+        status: statusInput,
+        gender: genderInput, // Salvar gênero
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -190,7 +194,6 @@ const Profile: React.FC = () => {
                   min="1"
                 />
               </div>
-              {/* Campo de seleção de Status */}
               <div>
                 <Label htmlFor="status">Status</Label>
                 <Select value={statusInput} onValueChange={setStatusInput}>
@@ -201,6 +204,21 @@ const Profile: React.FC = () => {
                     <SelectItem value="Online">Online</SelectItem>
                     <SelectItem value="Ausente">Ausente</SelectItem>
                     <SelectItem value="Ocupado">Ocupado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Campo de seleção de Gênero */}
+              <div>
+                <Label htmlFor="gender">Gênero</Label>
+                <Select value={genderInput} onValueChange={setGenderInput}>
+                  <SelectTrigger id="gender" className="w-full">
+                    <SelectValue placeholder="Selecionar Gênero" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Masculino">Masculino</SelectItem>
+                    <SelectItem value="Feminino">Feminino</SelectItem>
+                    <SelectItem value="Não Binário">Não Binário</SelectItem>
+                    <SelectItem value="Prefiro não dizer">Prefiro não dizer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -241,6 +259,10 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status:</p>
                   <p className="text-lg font-semibold">{profile?.status || 'Online'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Gênero:</p>
+                  <p className="text-lg font-semibold">{profile?.gender || 'Não especificado'}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Guilda:</p>
