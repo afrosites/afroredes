@@ -3,7 +3,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft, ChevronRight } from "lucide-react"
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store, ChevronLeft, ChevronRight, MessageSquareText } from "lucide-react"
 import { SettingsMenu } from "./SettingsMenu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
@@ -86,6 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen })
           <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" sidebarOpen={sidebarOpen} />
           <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" sidebarOpen={sidebarOpen} />
           <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" sidebarOpen={sidebarOpen} />
+          <NavLink to="/game/chat" icon={MessageSquareText} label="Chat" tooltipContent="Converse com outros aventureiros" sidebarOpen={sidebarOpen} />
         </nav>
       </div>
       <div className="mt-auto border-t py-2">

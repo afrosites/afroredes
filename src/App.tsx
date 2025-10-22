@@ -16,7 +16,8 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Map from "./pages/Map";
-import Shop from "./pages/Shop"; // Importar a nova página Shop
+import Shop from "./pages/Shop";
+import Chat from "./pages/Chat"; // Importar a nova página Chat
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -25,7 +26,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme" attribute="class"> {/* Adicionado attribute="class" */}
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme" attribute="class">
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -44,7 +45,8 @@ const App = () => (
               <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
               <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
               <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
-              <Route path="/game/shop" element={<GameLayout><Shop /></GameLayout>} /> {/* Nova rota para a Loja */}
+              <Route path="/game/shop" element={<GameLayout><Shop /></GameLayout>} />
+              <Route path="/game/chat" element={<GameLayout><Chat /></GameLayout>} /> {/* Nova rota para o Chat */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
