@@ -1,6 +1,7 @@
 import React from 'react';
 import CharacterSheet from '@/components/CharacterSheet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import GameMap from '@/components/GameMap'; // Importar GameMap
 
 const Game: React.FC = () => {
   // Exemplo de dados do personagem
@@ -14,8 +15,11 @@ const Game: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center"> {/* Ajustado para o layout */}
-      <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100">Bem-vindo ao RPG!</h1>
+    <div className="flex flex-col items-center justify-center space-y-8"> {/* Ajustado para o layout */}
+      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Bem-vindo ao RPG!</h1>
+      
+      <GameMap /> {/* Adicionar o mapa aqui */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl">
         <CharacterSheet {...playerCharacter} />
         {/* Futuros componentes de inventário, missões, etc. */}
@@ -29,14 +33,13 @@ const Game: React.FC = () => {
         </Card>
         <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle>Missões</CardTitle>
+            <CardTitle>Missões Ativas</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">Nenhuma missão ativa.</p>
           </CardContent>
         </Card>
       </div>
-      {/* MadeWithDyad removido daqui, agora está no Footer */}
     </div>
   );
 };
