@@ -3,15 +3,15 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map } from "lucide-react"
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, LayoutDashboard, Map, Store } from "lucide-react" // Importar Store icon
 import { SettingsMenu } from "./SettingsMenu"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip" // Importar componentes de Tooltip
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface NavLinkProps {
   to: string;
   icon: React.ElementType;
   label: string;
-  tooltipContent?: string; // Nova prop para o conteúdo do tooltip
+  tooltipContent?: string;
 }
 
 const NavLink: React.FC<NavLinkProps> = ({ to, icon: Icon, label, tooltipContent }) => {
@@ -60,6 +60,7 @@ export const Sidebar: React.FC = () => {
           <NavLink to="/game/quests" icon={ScrollText} label="Missões" tooltipContent="Aceite e complete missões" />
           <NavLink to="/game/guilds" icon={Shield} label="Guildas" tooltipContent="Encontre ou crie uma guilda" />
           <NavLink to="/game/ranking" icon={Award} label="Ranking" tooltipContent="Veja os melhores jogadores e guildas" />
+          <NavLink to="/game/shop" icon={Store} label="Loja" tooltipContent="Compre itens e equipamentos" /> {/* Novo link para a Loja */}
         </nav>
       </div>
       <div className="mt-auto border-t py-2">

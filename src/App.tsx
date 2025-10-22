@@ -15,7 +15,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Map from "./pages/Map"; // Importar a nova página Map
+import Map from "./pages/Map";
+import Shop from "./pages/Shop"; // Importar a nova página Shop
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -35,7 +36,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/game" element={<GameLayout><Game /></GameLayout>} />
               <Route path="/game/dashboard" element={<GameLayout><Dashboard /></GameLayout>} />
-              <Route path="/game/map" element={<GameLayout><Map /></GameLayout>} /> {/* Nova rota para o Mapa */}
+              <Route path="/game/map" element={<GameLayout><Map /></GameLayout>} />
               <Route path="/game/inventory" element={<GameLayout><Inventory /></GameLayout>} />
               <Route path="/game/skills" element={<GameLayout><Skills /></GameLayout>} />
               <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
               <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
               <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
+              <Route path="/game/shop" element={<GameLayout><Shop /></GameLayout>} /> {/* Nova rota para a Loja */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
