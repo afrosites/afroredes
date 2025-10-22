@@ -14,8 +14,8 @@ import Ranking from "./pages/Ranking";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import PrivacyPolicy from "./pages/PrivacyPolicy"; // Import new page
-import LGPD from "./pages/LGPD"; // Import new page
+// Removido import PrivacyPolicy from "./pages/PrivacyPolicy";
+// Removido import LGPD from "./pages/LGPD";
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 import { SessionContextProvider } from "./components/SessionContextProvider";
@@ -41,8 +41,7 @@ const App = () => (
               <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
               <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
               <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} />
-              <Route path="/game/privacy-policy" element={<GameLayout><PrivacyPolicy /></GameLayout>} /> {/* New route */}
-              <Route path="/game/lgpd" element={<GameLayout><LGPD /></GameLayout>} /> {/* New route */}
+              {/* Rotas de Política de Privacidade e LGPD removidas */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
