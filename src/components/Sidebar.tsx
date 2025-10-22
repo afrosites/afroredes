@@ -3,7 +3,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Briefcase, ScrollText, Sparkles, Shield, Award, User } from "lucide-react"
+import { Briefcase, ScrollText, Sparkles, Shield, Award, User, Settings } from "lucide-react" // Import Settings icon
 
 interface NavLinkProps {
   to: string;
@@ -45,6 +45,12 @@ export const Sidebar: React.FC = () => {
           <NavLink to="/game/quests" icon={ScrollText} label="Missões" />
           <NavLink to="/game/guilds" icon={Shield} label="Guildas" />
           <NavLink to="/game/ranking" icon={Award} label="Ranking" />
+        </nav>
+      </div>
+      {/* Settings link at the bottom */}
+      <div className="mt-auto border-t py-2">
+        <nav className="grid items-start px-4 text-sm font-medium lg:px-6">
+          <NavLink to="/game/settings" icon={Settings} label="Configurações" />
         </nav>
       </div>
     </div>

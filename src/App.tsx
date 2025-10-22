@@ -11,7 +11,8 @@ import Skills from "./pages/Skills";
 import Quests from "./pages/Quests";
 import Guilds from "./pages/Guilds";
 import Ranking from "./pages/Ranking";
-import Profile from "./pages/Profile"; // Import new Profile page
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings"; // Import new Settings page
 import { ThemeProvider } from "@/components/theme-provider";
 import GameLayout from "./layouts/GameLayout";
 
@@ -32,7 +33,8 @@ const App = () => (
             <Route path="/game/quests" element={<GameLayout><Quests /></GameLayout>} />
             <Route path="/game/guilds" element={<GameLayout><Guilds /></GameLayout>} />
             <Route path="/game/ranking" element={<GameLayout><Ranking /></GameLayout>} />
-            <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} /> {/* New route for Profile */}
+            <Route path="/game/profile" element={<GameLayout><Profile /></GameLayout>} />
+            <Route path="/game/settings" element={<GameLayout><Settings /></GameLayout>} /> {/* New route for Settings */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
