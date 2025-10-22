@@ -10,9 +10,10 @@ import { toast } from 'sonner';
 import { useSession } from '@/components/SessionContextProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Coins, Sword, Shield, Droplet, Gem, Store, Info } from 'lucide-react';
+import { Coins, Sword, Shield, Droplet, Gem, Store, Info, User } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import NPCVendor from './NPCVendor'; // Importar o novo componente NPCVendor
 
 interface ShopItem {
   id: string;
@@ -25,6 +26,19 @@ interface ShopItem {
   health_restore: number;
   icon_name: keyof typeof LucideIcons; // Type for Lucide icon names
 }
+
+interface NPC {
+  id: string;
+  name: string;
+  description: string;
+  avatarUrl?: string;
+}
+
+const dummyNPCs: NPC[] = [
+  { id: 'npc1', name: 'Mercador Elara', description: 'Especialista em armas e armaduras.', avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { id: 'npc2', name: 'Alquimista Kael', description: 'Vende poções e ingredientes raros.', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { id: 'npc3', name: 'Mestre Ferreiro', description: 'Forja equipamentos lendários.', avatarUrl: 'https://images.unsplash.com/photo-1507003211169-e69fe254fe58?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+];
 
 const getItemIcon = (iconName?: keyof typeof LucideIcons, itemType?: ShopItem['item_type']) => {
   if (iconName && LucideIcons[iconName]) {
@@ -66,6 +80,7 @@ const ShopDisplay: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
   const [isBuying, setIsBuying] = useState(false);
   const [userGold, setUserGold] = useState(0);
+  const [selectedNPC, setSelectedNPC] = useState<NPC | null>(dummyNPCs[0]); // Seleciona o primeiro NPC por padrão
 
   useEffect(() => {
     fetchShopItems();
@@ -136,7 +151,7 @@ const ShopDisplay: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto h-[600px] flex flex-col">
+    <Card className="w-full max-w-4xl mx-auto h-[700px] flex flex-col"> {/* Aumentado a altura para acomodar NPCs */}
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Store className="h-6 w-6" /> Loja de Itens
@@ -150,35 +165,58 @@ const ShopDisplay: React.FC = () => {
         )}
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4">
+        {/* NPC Vendors Section */}
+        <div className="border-b dark:border-gray-700 p-4">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <User className="h-5 w-5" /> Vendedores
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {loadingItems ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-40 w-full" />
-              ))
-            ) : shopItems.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8 col-span-full">Nenhum item disponível na loja.</p>
-            ) : (
-              shopItems.map((item) => {
-                const Icon = getItemIcon(item.icon_name, item.item_type);
-                return (
-                  <Card
-                    key={item.id}
-                    className="flex flex-col items-center text-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    <Icon className="h-12 w-12 mb-2 text-primary" />
-                    <h3 className="text-lg font-semibold">{item.name}</h3>
-                    <Badge variant="outline" className="mt-1 capitalize">{translateItemType(item.item_type)}</Badge>
-                    <p className="flex items-center gap-1 text-sm font-medium mt-2">
-                      <Coins className="h-4 w-4 text-yellow-600" /> {item.price_gold}
-                    </p>
-                  </Card>
-                );
-              })
-            )}
+            {dummyNPCs.map(npc => (
+              <NPCVendor
+                key={npc.id}
+                name={npc.name}
+                description={npc.description}
+                avatarUrl={npc.avatarUrl}
+                onClick={() => setSelectedNPC(npc)}
+                isSelected={selectedNPC?.id === npc.id}
+              />
+            ))}
           </div>
-        </ScrollArea>
+        </div>
+
+        {/* Shop Items Section */}
+        <div className="flex-1 p-4">
+          <h3 className="text-lg font-semibold mb-3">Itens à Venda ({selectedNPC?.name || 'Geral'})</h3>
+          <ScrollArea className="h-[calc(100%-2.5rem)] pr-4"> {/* Ajustado a altura da ScrollArea */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {loadingItems ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-40 w-full" />
+                ))
+              ) : shopItems.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8 col-span-full">Nenhum item disponível na loja.</p>
+              ) : (
+                shopItems.map((item) => {
+                  const Icon = getItemIcon(item.icon_name, item.item_type);
+                  return (
+                    <Card
+                      key={item.id}
+                      className="flex flex-col items-center text-center p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      <Icon className="h-12 w-12 mb-2 text-primary" />
+                      <h3 className="text-lg font-semibold">{item.name}</h3>
+                      <Badge variant="outline" className="mt-1 capitalize">{translateItemType(item.item_type)}</Badge>
+                      <p className="flex items-center gap-1 text-sm font-medium mt-2">
+                        <Coins className="h-4 w-4 text-yellow-600" /> {item.price_gold}
+                      </p>
+                    </Card>
+                  );
+                })
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </CardContent>
 
       {/* Dialog for item details and purchase */}
